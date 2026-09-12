@@ -1,6 +1,6 @@
 # OpsPilot Backend
 
-Backend do OpsPilot, uma plataforma de inteligência operacional para apoiar a gestão de contas. Esta primeira etapa estabelece a base técnica da API; modelos de domínio, analytics e integrações serão adicionados posteriormente.
+Backend do OpsPilot, uma plataforma de inteligência operacional para apoiar a gestão de contas. A aplicação possui sua fundação técnica e o modelo de domínio operacional; analytics e integrações serão adicionados posteriormente.
 
 ## Stack
 
@@ -72,7 +72,18 @@ No Windows:
 .\mvnw.cmd test
 ```
 
-O teste do endpoint usa um slice MVC e não depende de uma instância do PostgreSQL.
+O teste do endpoint usa um slice MVC. Os testes de persistência usam o PostgreSQL real iniciado pelo Docker Compose para validar conjuntamente as migrations Flyway e os mappings Hibernate.
+
+## Modelo de domínio
+
+O core operacional é composto por:
+
+- `Account`: conta empresarial acompanhada pela plataforma;
+- `Order`: pedido associado a uma conta;
+- `SupportTicket`: ticket de suporte associado a uma conta;
+- `Interaction`: interação registrada com uma conta.
+
+Os relacionamentos são unidirecionais e partem das entidades operacionais para `Account`, com carregamento lazy e sem cascata. O schema correspondente é criado pela migration `V1__create_core_domain_tables.sql`.
 
 ## Estrutura
 
@@ -83,11 +94,13 @@ src/
 │   │   ├── OpsPilotApplication.java
 │   │   ├── controller/
 │   │   ├── dto/
-│   │   └── exception/
+│   │   ├── exception/
+│   │   ├── model/
+│   │   └── repository/
 │   └── resources/
 │       ├── application.yml
 │       └── db/migration/
-└── test/java/com/opspilot/controller/
+└── test/java/com/opspilot/
 ```
 
-Pacotes de modelo, repositório e serviço serão criados quando houver casos de uso reais. O schema será versionado exclusivamente por migrations Flyway; `ddl-auto` está configurado como `validate`.
+O schema é versionado exclusivamente por migrations Flyway; `ddl-auto` está configurado como `validate`. A camada de serviço será criada quando houver casos de uso reais.
