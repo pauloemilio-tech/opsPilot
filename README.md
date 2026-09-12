@@ -85,6 +85,10 @@ O core operacional é composto por:
 
 Os relacionamentos são unidirecionais e partem das entidades operacionais para `Account`, com carregamento lazy e sem cascata. O schema correspondente é criado pela migration `V1__create_core_domain_tables.sql`.
 
+## Service layer
+
+A camada de serviço contém regras operacionais determinísticas para variação de receita, pedidos atrasados e tickets ativos, além de consultas eficientes para os indicadores. O `AccountOperationalService` coordena essas regras e produz um snapshot operacional consolidado da conta, sem expor entidades por endpoints de negócio.
+
 ## Estrutura
 
 ```text
@@ -96,7 +100,8 @@ src/
 │   │   ├── dto/
 │   │   ├── exception/
 │   │   ├── model/
-│   │   └── repository/
+│   │   ├── repository/
+│   │   └── service/
 │   └── resources/
 │       ├── application.yml
 │       └── db/migration/
