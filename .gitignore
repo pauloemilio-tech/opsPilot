@@ -1,0 +1,27 @@
+# Build
+target/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+application-local.yml
+
+# IDEs and editors
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Maven Wrapper cache
+.mvn/wrapper/dists/
