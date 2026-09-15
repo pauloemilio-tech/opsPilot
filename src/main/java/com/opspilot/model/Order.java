@@ -83,12 +83,25 @@ public class Order {
             Instant orderedAt,
             Instant expectedDeliveryAt
     ) {
+        this(account, orderNumber, amount, status, orderedAt, expectedDeliveryAt, null);
+    }
+
+    public Order(
+            Account account,
+            String orderNumber,
+            BigDecimal amount,
+            OrderStatus status,
+            Instant orderedAt,
+            Instant expectedDeliveryAt,
+            Instant deliveredAt
+    ) {
         this.account = account;
         this.orderNumber = orderNumber;
         this.amount = amount;
         this.status = status;
         this.orderedAt = orderedAt;
         this.expectedDeliveryAt = expectedDeliveryAt;
+        this.deliveredAt = deliveredAt;
     }
 
     @PrePersist
