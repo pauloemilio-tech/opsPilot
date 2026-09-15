@@ -67,6 +67,23 @@ Resposta esperada:
 }
 ```
 
+## Available API Endpoints
+
+```http
+GET /api/health
+GET /api/accounts
+GET /api/accounts/{accountId}
+GET /api/accounts/{accountId}/snapshot
+```
+
+Com a aplicação executando no profile `dev`:
+
+```bash
+curl http://localhost:8080/api/accounts
+curl http://localhost:8080/api/accounts/{accountId}
+curl http://localhost:8080/api/accounts/{accountId}/snapshot
+```
+
 ## Testes e build
 
 No Linux ou macOS:
