@@ -74,6 +74,8 @@ GET /api/health
 GET /api/accounts
 GET /api/accounts/{accountId}
 GET /api/accounts/{accountId}/snapshot
+GET /api/accounts/{accountId}/analytics
+GET /api/accounts/priorities
 ```
 
 Com a aplicação executando no profile `dev`:
@@ -82,7 +84,11 @@ Com a aplicação executando no profile `dev`:
 curl http://localhost:8080/api/accounts
 curl http://localhost:8080/api/accounts/{accountId}
 curl http://localhost:8080/api/accounts/{accountId}/snapshot
+curl http://localhost:8080/api/accounts/{accountId}/analytics
+curl http://localhost:8080/api/accounts/priorities
 ```
+
+O analytics engine usa regras determinísticas e explicáveis. O Risk Score representa exposição operacional, o Potential Score representa oportunidade comercial e o Priority Score combina ambos para ordenar as contas que merecem atenção primeiro.
 
 ## Testes e build
 
