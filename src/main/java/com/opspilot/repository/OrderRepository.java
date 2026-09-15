@@ -12,6 +12,10 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
+    long countByOrderNumberStartingWith(String prefix);
+
+    long countByAccount_Id(UUID accountId);
+
     @Query("""
             SELECT COUNT(o)
             FROM Order o

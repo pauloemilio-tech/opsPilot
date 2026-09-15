@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, UUID> {
 
+    long countByAccount_Id(UUID accountId);
+
     long countByAccount_IdAndStatusIn(UUID accountId, Collection<TicketStatus> statuses);
 
     long countByAccount_IdAndStatusInAndPriority(

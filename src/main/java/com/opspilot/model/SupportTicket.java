@@ -74,11 +74,23 @@ public class SupportTicket {
             TicketPriority priority,
             Instant openedAt
     ) {
+        this(account, subject, status, priority, openedAt, null);
+    }
+
+    public SupportTicket(
+            Account account,
+            String subject,
+            TicketStatus status,
+            TicketPriority priority,
+            Instant openedAt,
+            Instant resolvedAt
+    ) {
         this.account = account;
         this.subject = subject;
         this.status = status;
         this.priority = priority;
         this.openedAt = openedAt;
+        this.resolvedAt = resolvedAt;
     }
 
     @PrePersist

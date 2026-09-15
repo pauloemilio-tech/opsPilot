@@ -8,5 +8,7 @@ import java.util.UUID;
 
 public interface InteractionRepository extends JpaRepository<Interaction, UUID> {
 
+    long countByAccount_Id(UUID accountId);
+
     Optional<Interaction> findFirstByAccount_IdOrderByOccurredAtDescCreatedAtDesc(UUID accountId);
 }

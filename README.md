@@ -36,6 +36,22 @@ No Windows PowerShell:
 
 A aplicação aceita as variáveis `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` e `SERVER_PORT`. Os valores padrão correspondem ao PostgreSQL do `docker-compose.yml` e à porta `8080`.
 
+### Dados de demonstração
+
+O profile `dev` carrega uma base fictícia, determinística e idempotente com diferentes cenários operacionais. O seed usa a referência fixa `2026-09-01T12:00:00Z` e não é executado em nenhum outro profile.
+
+No Linux ou macOS:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+No Windows PowerShell:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
+```
+
 ## Health check
 
 ```bash
@@ -95,6 +111,7 @@ src/
 │   │   ├── exception/
 │   │   ├── model/
 │   │   ├── repository/
+│   │   ├── seed/
 │   │   └── service/
 │   └── resources/
 │       ├── application.yml
