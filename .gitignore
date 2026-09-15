@@ -1,5 +1,6 @@
 # Build
 target/
+/backend/target/
 
 # Environment and local configuration
 .env

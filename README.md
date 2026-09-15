@@ -1,6 +1,6 @@
 # OpsPilot
 
-Backend de inteligência operacional para gestão de contas, construído como um monólito modular com Java 17 e Spring Boot.
+Plataforma de inteligência operacional para gestão de contas. O backend é construído como um monólito modular com Java 17 e Spring Boot; o frontend Angular está planejado para a próxima etapa.
 
 ## Stack
 
@@ -15,6 +15,12 @@ Backend de inteligência operacional para gestão de contas, construído como um
 ## Executando localmente
 
 Pré-requisitos: JDK 17 ou superior e Docker com Docker Compose. O Maven Wrapper já faz parte do projeto.
+
+Entre no diretório do backend antes de executar os comandos:
+
+```bash
+cd backend
+```
 
 Inicie o PostgreSQL:
 
@@ -126,20 +132,20 @@ A camada de serviço contém regras determinísticas para variação de receita,
 ## Estrutura
 
 ```text
-src/
-├── main/
-│   ├── java/com/opspilot/
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   ├── exception/
-│   │   ├── model/
-│   │   ├── repository/
-│   │   ├── seed/
-│   │   └── service/
-│   └── resources/
-│       ├── application.yml
-│       └── db/migration/
-└── test/java/com/opspilot/
+OpsPilot/
+├── backend/                  Spring Boot operational intelligence API
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/opspilot/
+│   │   │   └── resources/
+│   │   └── test/java/com/opspilot/
+│   ├── pom.xml
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   └── docker-compose.yml
+├── frontend/                 Angular application (planejada; ainda não criada)
+├── README.md
+└── .gitignore
 ```
 
-O schema é versionado exclusivamente por migrations Flyway e o Hibernate usa `ddl-auto: validate`. Analytics, scoring, autenticação, frontend e integrações de AI permanecem fora desta etapa.
+O schema é versionado exclusivamente por migrations Flyway e o Hibernate usa `ddl-auto: validate`. Autenticação, frontend e integrações de AI permanecem fora desta etapa.
