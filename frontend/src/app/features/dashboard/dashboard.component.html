@@ -1,15 +1,27 @@
 <header class="page-header">
-  <p class="eyebrow">Account operations</p>
-  <h1>Operational Dashboard</h1>
-  <p class="page-description">Prioritized accounts based on operational risk and commercial potential.</p>
+  <div>
+    <p class="eyebrow">Account operations</p>
+    <h1>Operational Dashboard</h1>
+    <p class="page-description">Prioritized accounts based on operational risk and commercial potential.</p>
+  </div>
+  @if (!loading() && !errorMessage()) {
+    <p class="monitoring-note"><strong>{{ summary().total }}</strong> accounts in priority queue</p>
+  }
 </header>
 
 @if (loading()) {
-  <section class="panel state-panel" aria-live="polite">
-    <div>
-      <div class="loading-indicator" aria-hidden="true"></div>
-      <h2>Loading priorities</h2>
-      <p>Reviewing the latest account ranking.</p>
+  <section class="dashboard-loading" aria-live="polite">
+    <h2 class="visually-hidden">Loading priorities</h2>
+    <div class="summary-skeleton" aria-hidden="true">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <span class="skeleton"></span>
+      }
+    </div>
+    <div class="panel ranking-skeleton" aria-hidden="true">
+      <span class="skeleton skeleton-heading"></span>
+      @for (item of [1, 2, 3, 4, 5]; track item) {
+        <span class="skeleton skeleton-row"></span>
+      }
     </div>
   </section>
 } @else if (errorMessage()) {
@@ -23,8 +35,8 @@
 } @else if (priorities().length === 0) {
   <section class="panel state-panel">
     <div>
-      <h2>No monitored accounts</h2>
-      <p>The ranking is empty. Eligible accounts will appear here when they become available.</p>
+      <h2>No accounts currently require prioritization</h2>
+      <p>The operational priority queue is empty. Eligible accounts will appear here when returned by the analytics service.</p>
     </div>
   </section>
 } @else {
@@ -33,13 +45,9 @@
       <span>Total monitored</span>
       <strong>{{ summary().total }}</strong>
     </article>
-    <article class="summary-item summary-urgent">
-      <span>Urgent</span>
-      <strong>{{ summary().urgent }}</strong>
-    </article>
-    <article class="summary-item summary-high">
-      <span>High</span>
-      <strong>{{ summary().high }}</strong>
+    <article class="summary-item summary-attention">
+      <span>High / urgent</span>
+      <strong>{{ summary().attention }}</strong>
     </article>
     <article class="summary-item summary-medium">
       <span>Medium</span>
@@ -77,6 +85,7 @@
             <tr>
               <td data-label="Rank"><span class="rank">{{ rank + 1 }}</span></td>
               <th scope="row" data-label="Account">
+                <span class="mobile-rank">Priority {{ rank + 1 }}</span>
                 <a class="account-link" [routerLink]="['/accounts', priority.accountId]">{{ priority.accountName }}</a>
               </th>
               <td data-label="Risk">
@@ -85,7 +94,7 @@
               <td data-label="Potential">
                 <div class="score-cell"><strong>{{ priority.potentialScore }}</strong><app-level-badge [level]="priority.potentialLevel" /></div>
               </td>
-              <td data-label="Priority">
+              <td class="priority-cell" data-label="Priority">
                 <div class="score-cell"><strong>{{ priority.priorityScore }}</strong><app-level-badge [level]="priority.priorityLevel" /></div>
               </td>
               <td class="action-cell">

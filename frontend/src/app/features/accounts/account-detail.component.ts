@@ -2,6 +2,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { AccountApiService } from '../../core/api/account-api.service';
 import { AccountAnalytics, AccountDetails, AccountOperationalSnapshot } from '../../core/models/account.models';
@@ -23,6 +24,7 @@ export class AccountDetailComponent {
   private readonly accountApi = inject(AccountApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly title = inject(Title);
   private readonly accountId = this.route.snapshot.paramMap.get('accountId');
 
   protected readonly account = signal<AccountDetails | null>(null);
@@ -30,6 +32,10 @@ export class AccountDetailComponent {
   protected readonly analytics = signal<AccountAnalytics | null>(null);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly accountStatusLabel = computed(() => {
+    const status = this.account()?.status;
+    return status ? ACCOUNT_STATUS_LABELS[status] : '';
+  });
   protected readonly riskFactors = computed<AnalyticsFactor[]>(() => {
     const risk = this.analytics()?.risk;
     return risk
@@ -81,12 +87,19 @@ export class AccountDetailComponent {
           this.account.set(account);
           this.snapshot.set(snapshot);
           this.analytics.set(analytics);
+          this.title.setTitle(`${account.name} | OpsPilot`);
           this.loading.set(false);
         },
         error: () => {
-          this.errorMessage.set('Unable to load this account. It may no longer exist, or the backend may be unavailable.');
+          this.errorMessage.set('Unable to load account information. Check your connection and try again.');
           this.loading.set(false);
         },
       });
   }
 }
+
+const ACCOUNT_STATUS_LABELS: Record<AccountDetails['status'], string> = {
+  ACTIVE: 'Active',
+  INACTIVE: 'Inactive',
+  ONBOARDING: 'Onboarding',
+};

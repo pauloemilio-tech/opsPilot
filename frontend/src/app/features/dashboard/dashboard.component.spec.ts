@@ -52,14 +52,14 @@ describe('DashboardComponent', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain('Horizon Supply');
     expect(rows[1].textContent).toContain('Nova Distribution');
-    expect(rows[0].textContent).toContain('CRITICAL');
+    expect(rows[0].textContent).toContain('Critical');
     expect(rows[0].textContent).toContain('61');
     expect(element.textContent).toContain('Total monitored');
   });
 
   it('shows an intentional empty state', () => {
     response = of([]);
-    expect(render().textContent).toContain('No monitored accounts');
+    expect(render().textContent).toContain('No accounts currently require prioritization');
   });
 
   it('shows a recoverable error state', () => {

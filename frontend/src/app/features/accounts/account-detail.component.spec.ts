@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { AccountApiService } from '../../core/api/account-api.service';
 import { AccountAnalytics, AccountDetails, AccountOperationalSnapshot } from '../../core/models/account.models';
@@ -59,13 +60,14 @@ describe('AccountDetailComponent', () => {
     expect(element.textContent).toContain('Delayed orders');
     expect(element.textContent).toContain('4');
     expect(element.textContent).toContain('No interactions recorded');
+    expect(TestBed.inject(Title).getTitle()).toBe('Horizon Supply | OpsPilot');
   });
 
   it('renders backend-provided analytics factors without recalculation', () => {
     const element = fixture.nativeElement as HTMLElement;
     const factors = [...element.querySelectorAll('.factor-list')].map((list) => list.textContent);
-    expect(element.textContent).toContain('Why this account has its priority');
-    expect(element.textContent).toContain('CRITICAL');
+    expect(element.textContent).toContain('Analytics summary');
+    expect(element.textContent).toContain('Critical');
     expect(factors[0]).toContain('Revenue decline');
     expect(factors[0]).toContain('+30');
     expect(factors[1]).toContain('Revenue strength');

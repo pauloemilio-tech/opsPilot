@@ -1,0 +1,29 @@
+.not-found {
+  max-width: 620px;
+  margin: 8vh auto 0;
+  padding: 64px 36px;
+  text-align: center;
+}
+
+.error-code {
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+h1 {
+  margin-bottom: 12px;
+}
+
+.not-found > p:not(.error-code) {
+  margin-bottom: 28px;
+  color: var(--muted-strong);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
