@@ -16,12 +16,12 @@
 .header-inner,
 .app-main,
 .app-footer {
-  width: min(1180px, calc(100% - 40px));
+  width: min(1220px, calc(100% - 48px));
   margin: 0 auto;
 }
 
 .header-inner {
-  min-height: 72px;
+  min-height: 66px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -76,12 +76,24 @@ nav a {
   font-size: 0.9rem;
   font-weight: 650;
   text-decoration: none;
+  position: relative;
 }
 
 nav a:hover,
 nav a.active {
   background: var(--surface-muted);
   color: var(--ink);
+}
+
+nav a.active::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  bottom: 3px;
+  left: 14px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .app-main {
@@ -103,7 +115,7 @@ nav a.active {
   .header-inner,
   .app-main,
   .app-footer {
-    width: min(100% - 24px, 1180px);
+    width: min(1220px, calc(100% - 24px));
   }
 
   .app-main {

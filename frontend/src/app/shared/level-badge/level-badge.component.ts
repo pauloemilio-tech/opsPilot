@@ -9,6 +9,15 @@ import { AnalyticsLevel } from '../../core/models/account.models';
 })
 export class LevelBadgeComponent {
   readonly level = input.required<AnalyticsLevel>();
-  protected readonly displayLevel = computed(() => this.level().replace('_', ' '));
+  protected readonly displayLevel = computed(() => LEVEL_LABELS[this.level()]);
   protected readonly badgeClass = computed(() => `level-badge level-${this.level().toLowerCase().replace('_', '-')}`);
 }
+
+const LEVEL_LABELS: Record<AnalyticsLevel, string> = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High',
+  CRITICAL: 'Critical',
+  VERY_HIGH: 'Very High',
+  URGENT: 'Urgent',
+};

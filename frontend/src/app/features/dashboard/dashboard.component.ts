@@ -23,8 +23,8 @@ export class DashboardComponent {
     const priorities = this.priorities();
     return {
       total: priorities.length,
-      urgent: this.countByLevel(priorities, 'URGENT'),
-      high: this.countByLevel(priorities, 'HIGH'),
+      attention:
+        this.countByLevel(priorities, 'URGENT') + this.countByLevel(priorities, 'HIGH'),
       medium: this.countByLevel(priorities, 'MEDIUM'),
       low: this.countByLevel(priorities, 'LOW'),
     };
@@ -47,7 +47,7 @@ export class DashboardComponent {
           this.loading.set(false);
         },
         error: () => {
-          this.errorMessage.set('Unable to load account priorities. Check that the backend is running and try again.');
+          this.errorMessage.set('Unable to load account priorities. Check your connection and try again.');
           this.loading.set(false);
         },
       });
