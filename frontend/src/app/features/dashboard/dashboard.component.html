@@ -1,0 +1,100 @@
+<header class="page-header">
+  <p class="eyebrow">Account operations</p>
+  <h1>Operational Dashboard</h1>
+  <p class="page-description">Prioritized accounts based on operational risk and commercial potential.</p>
+</header>
+
+@if (loading()) {
+  <section class="panel state-panel" aria-live="polite">
+    <div>
+      <div class="loading-indicator" aria-hidden="true"></div>
+      <h2>Loading priorities</h2>
+      <p>Reviewing the latest account ranking.</p>
+    </div>
+  </section>
+} @else if (errorMessage()) {
+  <section class="panel state-panel" aria-live="assertive">
+    <div>
+      <h2>Priorities unavailable</h2>
+      <p>{{ errorMessage() }}</p>
+      <button class="button" type="button" (click)="loadPriorities()">Try again</button>
+    </div>
+  </section>
+} @else if (priorities().length === 0) {
+  <section class="panel state-panel">
+    <div>
+      <h2>No monitored accounts</h2>
+      <p>The ranking is empty. Eligible accounts will appear here when they become available.</p>
+    </div>
+  </section>
+} @else {
+  <section class="summary-grid" aria-label="Priority summary">
+    <article class="summary-item summary-total">
+      <span>Total monitored</span>
+      <strong>{{ summary().total }}</strong>
+    </article>
+    <article class="summary-item summary-urgent">
+      <span>Urgent</span>
+      <strong>{{ summary().urgent }}</strong>
+    </article>
+    <article class="summary-item summary-high">
+      <span>High</span>
+      <strong>{{ summary().high }}</strong>
+    </article>
+    <article class="summary-item summary-medium">
+      <span>Medium</span>
+      <strong>{{ summary().medium }}</strong>
+    </article>
+    <article class="summary-item summary-low">
+      <span>Low</span>
+      <strong>{{ summary().low }}</strong>
+    </article>
+  </section>
+
+  <section class="ranking panel" aria-labelledby="ranking-title">
+    <div class="ranking-header">
+      <div>
+        <p class="section-kicker">Attention queue</p>
+        <h2 id="ranking-title">Priority ranking</h2>
+      </div>
+      <p>Ordered by OpsPilot analytics</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Account</th>
+            <th scope="col">Risk</th>
+            <th scope="col">Potential</th>
+            <th scope="col">Priority</th>
+            <th scope="col"><span class="visually-hidden">Open account</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (priority of priorities(); track priority.accountId; let rank = $index) {
+            <tr>
+              <td data-label="Rank"><span class="rank">{{ rank + 1 }}</span></td>
+              <th scope="row" data-label="Account">
+                <a class="account-link" [routerLink]="['/accounts', priority.accountId]">{{ priority.accountName }}</a>
+              </th>
+              <td data-label="Risk">
+                <div class="score-cell"><strong>{{ priority.riskScore }}</strong><app-level-badge [level]="priority.riskLevel" /></div>
+              </td>
+              <td data-label="Potential">
+                <div class="score-cell"><strong>{{ priority.potentialScore }}</strong><app-level-badge [level]="priority.potentialLevel" /></div>
+              </td>
+              <td data-label="Priority">
+                <div class="score-cell"><strong>{{ priority.priorityScore }}</strong><app-level-badge [level]="priority.priorityLevel" /></div>
+              </td>
+              <td class="action-cell">
+                <a class="row-action" [routerLink]="['/accounts', priority.accountId]" [attr.aria-label]="'View ' + priority.accountName">View <span aria-hidden="true">→</span></a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

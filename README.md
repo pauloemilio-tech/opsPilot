@@ -1,6 +1,6 @@
 # OpsPilot
 
-Plataforma de inteligência operacional para gestão de contas. O backend é construído como um monólito modular com Java 17 e Spring Boot; o frontend Angular está planejado para a próxima etapa.
+Plataforma de inteligência operacional para gestão de contas. O backend Spring Boot calcula indicadores explicáveis de risco, potencial e prioridade; o dashboard Angular apresenta o ranking e o contexto operacional de cada conta.
 
 ## Stack
 
@@ -11,8 +11,13 @@ Plataforma de inteligência operacional para gestão de contas. O backend é con
 - Spring Web, Spring Data JPA e Bean Validation
 - Flyway
 - Docker Compose
+- Angular 22
+- TypeScript
+- SCSS
 
-## Executando localmente
+## Desenvolvimento local
+
+### Backend
 
 Pré-requisitos: JDK 17 ou superior e Docker com Docker Compose. O Maven Wrapper já faz parte do projeto.
 
@@ -57,6 +62,18 @@ No Windows PowerShell:
 ```powershell
 .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
+
+### Frontend
+
+Com Node.js e npm instalados, abra outro terminal a partir da raiz do repositório:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+O dashboard estará disponível em `http://localhost:4200`. Durante o desenvolvimento, o Angular encaminha chamadas para `/api` ao backend em `http://localhost:8080` por meio do proxy configurado em `frontend/proxy.conf.json`.
 
 ## Health check
 
@@ -143,9 +160,15 @@ OpsPilot/
 │   ├── mvnw
 │   ├── mvnw.cmd
 │   └── docker-compose.yml
-├── frontend/                 Angular application (planejada; ainda não criada)
+├── frontend/                 Angular operational dashboard
+│   ├── src/app/
+│   │   ├── core/             API client and HTTP contract models
+│   │   ├── features/         Dashboard and account details
+│   │   └── shared/           Reusable presentation components
+│   ├── angular.json
+│   └── package.json
 ├── README.md
 └── .gitignore
 ```
 
-O schema é versionado exclusivamente por migrations Flyway e o Hibernate usa `ddl-auto: validate`. Autenticação, frontend e integrações de AI permanecem fora desta etapa.
+O schema é versionado exclusivamente por migrations Flyway e o Hibernate usa `ddl-auto: validate`. Autenticação, integrações de AI e implantação em produção permanecem fora desta etapa.

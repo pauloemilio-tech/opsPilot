@@ -1,0 +1,14 @@
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { AnalyticsLevel } from '../../core/models/account.models';
+
+@Component({
+  selector: 'app-level-badge',
+  template: '<span [class]="badgeClass()">{{ displayLevel() }}</span>',
+  styleUrl: './level-badge.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class LevelBadgeComponent {
+  readonly level = input.required<AnalyticsLevel>();
+  protected readonly displayLevel = computed(() => this.level().replace('_', ' '));
+  protected readonly badgeClass = computed(() => `level-badge level-${this.level().toLowerCase().replace('_', '-')}`);
+}

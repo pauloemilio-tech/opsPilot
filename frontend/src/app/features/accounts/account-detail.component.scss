@@ -1,0 +1,258 @@
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 28px;
+  color: var(--muted-strong);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--accent-dark);
+}
+
+.account-header {
+  margin-bottom: 32px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.account-header h1 {
+  margin-bottom: 8px;
+}
+
+.account-status {
+  margin-bottom: 5px;
+  padding: 6px 10px;
+  border: 1px solid #bcd5ce;
+  border-radius: 7px;
+  background: #edf6f3;
+  color: #286156;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+
+.status-inactive {
+  border-color: var(--border);
+  background: var(--surface-muted);
+  color: var(--muted-strong);
+}
+
+.status-onboarding {
+  border-color: #c3d2e7;
+  background: #edf3fb;
+  color: #355f92;
+}
+
+.overview,
+.snapshot {
+  margin-bottom: 20px;
+  padding: 26px;
+}
+
+.section-heading {
+  margin-bottom: 22px;
+}
+
+.section-heading h2,
+.section-kicker {
+  margin-bottom: 0;
+}
+
+.section-kicker {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metric-grid,
+.snapshot-grid {
+  margin: 0;
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--border);
+}
+
+.metric-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.snapshot-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.metric-grid > div,
+.snapshot-grid > div {
+  min-width: 0;
+  padding: 18px;
+  background: var(--surface);
+}
+
+dt {
+  color: var(--muted-strong);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+dd {
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+dd small {
+  margin-left: 2px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+dd.negative {
+  color: var(--danger);
+}
+
+.date-value {
+  font-size: 0.88rem;
+  letter-spacing: 0;
+}
+
+.data-note,
+.updated-at {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.analytics-section {
+  margin-top: 36px;
+}
+
+.analytics-heading {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.analytics-heading h2 {
+  margin: 3px 0 0;
+}
+
+.priority-summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.priority-summary > span {
+  color: var(--muted-strong);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.priority-summary > strong {
+  font-size: 1.65rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.score-panel {
+  padding: 26px;
+}
+
+.score-panel > header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.score-panel header span {
+  display: block;
+  color: var(--muted-strong);
+  font-size: 0.74rem;
+  font-weight: 650;
+}
+
+.score-panel header strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 2.2rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.factor-list {
+  margin: 8px 0 0;
+}
+
+.factor-list > div {
+  padding: 12px 0;
+  border-bottom: 1px solid #edf0f1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.factor-list > div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.factor-list dd {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.updated-at {
+  text-align: right;
+}
+
+@media (max-width: 800px) {
+  .metric-grid,
+  .snapshot-grid,
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .account-header,
+  .analytics-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metric-grid,
+  .snapshot-grid,
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview,
+  .snapshot,
+  .score-panel {
+    padding: 20px;
+  }
+}

@@ -1,6 +1,9 @@
 # Build
 target/
 /backend/target/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/
 
 # Environment and local configuration
 .env

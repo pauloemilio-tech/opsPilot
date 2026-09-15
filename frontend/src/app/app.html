@@ -1,0 +1,23 @@
+<header class="app-header">
+  <div class="header-inner">
+    <a class="brand" routerLink="/dashboard" aria-label="OpsPilot dashboard">
+      <span class="brand-mark" aria-hidden="true">OP</span>
+      <span>
+        <strong>OpsPilot</strong>
+        <small>Operational Intelligence</small>
+      </span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main class="app-main">
+  <router-outlet />
+</main>
+
+<footer class="app-footer">
+  <span>OpsPilot</span>
+  <span>Account operations, clearly prioritized.</span>
+</footer>
