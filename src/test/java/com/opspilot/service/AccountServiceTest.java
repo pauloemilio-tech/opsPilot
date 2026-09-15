@@ -10,11 +10,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +44,16 @@ class AccountServiceTest {
         assertThatThrownBy(() -> service.findById(accountId))
                 .isInstanceOf(AccountNotFoundException.class)
                 .hasMessage("Account not found: " + accountId);
+    }
+
+    @Test
+    void shouldFindAllAccountsOrderedByName() {
+        AccountService service = new AccountService(accountRepository);
+        List<Account> accounts = List.of(account("120.00", "100.00"), account("80.00", "100.00"));
+        when(accountRepository.findAllByOrderByNameAsc()).thenReturn(accounts);
+
+        assertThat(service.findAllOrderedByName()).isSameAs(accounts);
+        verify(accountRepository).findAllByOrderByNameAsc();
     }
 
     @Test

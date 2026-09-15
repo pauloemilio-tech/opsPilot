@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +25,11 @@ public class AccountService {
     public Account findById(UUID accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> findAllOrderedByName() {
+        return accountRepository.findAllByOrderByNameAsc();
     }
 
     public BigDecimal calculateRevenueChangePercentage(Account account) {
