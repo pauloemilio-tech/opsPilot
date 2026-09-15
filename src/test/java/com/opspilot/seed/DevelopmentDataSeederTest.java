@@ -7,6 +7,10 @@ import com.opspilot.repository.InteractionRepository;
 import com.opspilot.repository.OrderRepository;
 import com.opspilot.repository.SupportTicketRepository;
 import com.opspilot.service.AccountOperationalService;
+import com.opspilot.service.analytics.AccountAnalyticsService;
+import com.opspilot.service.analytics.model.AccountPriorityAssessment;
+import com.opspilot.service.analytics.model.PotentialLevel;
+import com.opspilot.service.analytics.model.RiskLevel;
 import com.opspilot.service.model.AccountOperationalSnapshot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +62,9 @@ class DevelopmentDataSeederTest {
 
     @Autowired
     private AccountOperationalService accountOperationalService;
+
+    @Autowired
+    private AccountAnalyticsService accountAnalyticsService;
 
     @MockitoBean
     private Clock clock;
@@ -134,6 +141,30 @@ class DevelopmentDataSeederTest {
         assertThat(interactionRepository.countByAccount_Id(onboarding.getId())).isEqualTo(3);
     }
 
+    @Test
+    void shouldProduceExpectedAnalyticsScenariosAndActiveRanking() {
+        List<AccountPriorityAssessment> ranking = accountAnalyticsService.rankAccounts();
+        AccountPriorityAssessment healthy = analytics("Northstar Retail");
+        AccountPriorityAssessment highRisk = analytics("Horizon Supply");
+        AccountPriorityAssessment highPotential = analytics("Nova Distribution");
+        AccountPriorityAssessment mixedSignals = analytics("Pulse Systems");
+
+        assertThat(healthy.risk().level()).isEqualTo(RiskLevel.LOW);
+        assertThat(ranking.get(0).accountName()).isEqualTo("Horizon Supply");
+        assertThat(highRisk.risk().level()).isEqualTo(RiskLevel.CRITICAL);
+        assertThat(highPotential.potential().level()).isEqualTo(PotentialLevel.VERY_HIGH);
+        assertThat(mixedSignals.risk().score()).isPositive();
+        assertThat(mixedSignals.potential().level()).isEqualTo(PotentialLevel.VERY_HIGH);
+        assertThat(ranking).extracting(AccountPriorityAssessment::accountName)
+                .doesNotContain("Atlas Consumer Products")
+                .contains("Summit Goods");
+        assertThat(ranking).isSortedAccordingTo(
+                java.util.Comparator.comparingInt(AccountPriorityAssessment::priorityScore)
+                        .reversed()
+                        .thenComparing(AccountPriorityAssessment::accountName)
+        );
+    }
+
     private List<Account> seededAccounts() {
         return ACCOUNT_NAMES.stream()
                 .map(this::account)
@@ -146,6 +177,10 @@ class DevelopmentDataSeederTest {
 
     private AccountOperationalSnapshot snapshot(String name) {
         return accountOperationalService.getSnapshot(account(name).getId());
+    }
+
+    private AccountPriorityAssessment analytics(String name) {
+        return accountAnalyticsService.analyze(account(name).getId());
     }
 
     private long ticketCount() {
