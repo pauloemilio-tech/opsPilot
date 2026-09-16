@@ -1,4 +1,4 @@
-<a class="back-link" routerLink="/dashboard"><span aria-hidden="true">&larr;</span> Back to dashboard</a>
+<a class="back-link" routerLink="/dashboard"><span aria-hidden="true">←</span> Attention queue</a>
 
 @if (loading()) {
   <section class="detail-loading" aria-live="polite">
@@ -6,14 +6,13 @@
     <div class="skeleton skeleton-title" aria-hidden="true"></div>
     <div class="skeleton skeleton-subtitle" aria-hidden="true"></div>
     <div class="loading-grid" aria-hidden="true">
-      @for (item of [1, 2, 3]; track item) {
-        <span class="skeleton"></span>
-      }
+      <span class="skeleton"></span><span class="skeleton"></span>
     </div>
   </section>
 } @else if (errorMessage()) {
   <section class="panel state-panel" aria-live="assertive">
     <div>
+      <p class="section-kicker">Investigation unavailable</p>
       <h1>Account unavailable</h1>
       <p>{{ errorMessage() }}</p>
       <button class="button" type="button" (click)="loadAccount()">Try again</button>
@@ -22,147 +21,170 @@
 } @else if (account(); as accountData) {
   <header class="account-header">
     <div>
-      <p class="eyebrow">Account intelligence</p>
+      <p class="eyebrow">Account investigation</p>
       <h1>{{ accountData.name }}</h1>
-      <p class="page-description">{{ accountData.industry || 'Industry not provided' }} <span aria-hidden="true">&middot;</span> {{ accountData.region || 'Region not provided' }}</p>
+      <p class="page-description">
+        {{ accountData.industry || 'Industry not provided' }} <span aria-hidden="true">/</span>
+        {{ accountData.region || 'Region not provided' }}
+      </p>
     </div>
-    <span class="account-status" [class]="'account-status status-' + accountData.status.toLowerCase()">{{ accountStatusLabel() }}</span>
+    <span
+      class="account-status"
+      [class]="'account-status status-' + accountData.status.toLowerCase()"
+      ><i aria-hidden="true"></i>{{ accountStatusLabel() }}</span
+    >
   </header>
 
-  @if (snapshot(); as snapshotData) {
-    <section class="indicators-section" aria-labelledby="indicators-title">
-      <div class="section-heading">
-        <p class="section-kicker">Current account state</p>
-        <h2 id="indicators-title">Key operational indicators</h2>
-      </div>
+  <div class="investigation-layout">
+    <div class="investigation-main">
+      @if (snapshot(); as snapshotData) {
+        <section class="operational-section" aria-labelledby="indicators-title">
+          <div class="section-heading">
+            <p class="section-kicker">Current account state</p>
+            <h2 id="indicators-title">Operational indicators</h2>
+          </div>
+          <div class="indicator-stack panel">
+            <article class="indicator-group">
+              <h3>Commercial</h3>
+              <dl>
+                <div>
+                  <dt>Monthly revenue</dt>
+                  <dd>{{ accountData.monthlyRevenue | number: '1.2-2' }}</dd>
+                </div>
+                <div>
+                  <dt>Previous month</dt>
+                  <dd>{{ accountData.previousMonthRevenue | number: '1.2-2' }}</dd>
+                </div>
+                <div>
+                  <dt>Revenue change</dt>
+                  <dd [class.negative]="accountData.revenueChangePercentage < 0">
+                    {{ accountData.revenueChangePercentage | number: '1.2-2' }}%
+                  </dd>
+                </div>
+              </dl>
+              <p class="data-note">Revenue shown in the units supplied by the API.</p>
+            </article>
+            <article class="indicator-group operations-group">
+              <h3>Operations</h3>
+              <dl>
+                <div>
+                  <dt>Delayed orders</dt>
+                  <dd>{{ snapshotData.delayedOrders }}</dd>
+                </div>
+                <div>
+                  <dt>Open tickets</dt>
+                  <dd>{{ snapshotData.openTickets }}</dd>
+                </div>
+                <div>
+                  <dt>Critical tickets</dt>
+                  <dd>{{ snapshotData.criticalOpenTickets }}</dd>
+                </div>
+              </dl>
+            </article>
+            <article class="indicator-group relationship-group">
+              <h3>Relationship</h3>
+              <dl>
+                <div>
+                  <dt>Engagement</dt>
+                  <dd>{{ accountData.engagementScore }}<small>/100</small></dd>
+                </div>
+                <div>
+                  <dt>Last interaction</dt>
+                  <dd class="date-value">
+                    {{
+                      snapshotData.lastInteractionAt
+                        ? (snapshotData.lastInteractionAt | date: 'medium')
+                        : 'No interactions recorded'
+                    }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+        </section>
+      }
 
-      <div class="indicator-grid">
-        <article class="indicator-group panel">
-          <h3>Commercial</h3>
-          <dl>
+      @if (analytics(); as analyticsData) {
+        <section class="explainability-section" aria-labelledby="explainability-title">
+          <div class="explainability-heading">
             <div>
-              <dt>Monthly revenue</dt>
-              <dd>{{ accountData.monthlyRevenue | number: '1.2-2' }}</dd>
+              <p class="section-kicker">Explainable scoring</p>
+              <h2 id="explainability-title">What drives this decision</h2>
             </div>
-            <div>
-              <dt>Previous month</dt>
-              <dd>{{ accountData.previousMonthRevenue | number: '1.2-2' }}</dd>
-            </div>
-            <div>
-              <dt>Revenue change</dt>
-              <dd [class.negative]="accountData.revenueChangePercentage < 0">{{ accountData.revenueChangePercentage | number: '1.2-2' }}%</dd>
-            </div>
-          </dl>
-          <p class="data-note">Revenue shown in the units supplied by the API.</p>
-        </article>
+            <p>Contributions supplied by backend analytics.</p>
+          </div>
+          <div class="breakdown-stack">
+            <article class="breakdown-panel panel risk-breakdown">
+              <header>
+                <div>
+                  <span>Risk contribution</span
+                  ><strong>{{ analyticsData.risk.score }} points</strong>
+                </div>
+                <app-level-badge [level]="analyticsData.risk.level" />
+              </header>
+              <dl class="factor-list">
+                @for (factor of riskFactors(); track factor.label) {
+                  <div>
+                    <dt>
+                      <span>{{ factor.label }}</span
+                      ><i aria-hidden="true"><b [style.width.%]="factor.value"></b></i>
+                    </dt>
+                    <dd>+{{ factor.value }}</dd>
+                  </div>
+                }
+              </dl>
+            </article>
+            <article class="breakdown-panel panel potential-breakdown">
+              <header>
+                <div>
+                  <span>Potential contribution</span
+                  ><strong>{{ analyticsData.potential.score }} points</strong>
+                </div>
+                <app-level-badge [level]="analyticsData.potential.level" />
+              </header>
+              <dl class="factor-list">
+                @for (factor of potentialFactors(); track factor.label) {
+                  <div>
+                    <dt>
+                      <span>{{ factor.label }}</span
+                      ><i aria-hidden="true"><b [style.width.%]="factor.value"></b></i>
+                    </dt>
+                    <dd>+{{ factor.value }}</dd>
+                  </div>
+                }
+              </dl>
+            </article>
+          </div>
+        </section>
+      }
+    </div>
 
-        <article class="indicator-group panel operations-group">
-          <h3>Operations</h3>
-          <dl>
-            <div>
-              <dt>Delayed orders</dt>
-              <dd>{{ snapshotData.delayedOrders }}</dd>
-            </div>
-            <div>
-              <dt>Open tickets</dt>
-              <dd>{{ snapshotData.openTickets }}</dd>
-            </div>
-            <div>
-              <dt>Critical tickets</dt>
-              <dd>{{ snapshotData.criticalOpenTickets }}</dd>
-            </div>
-          </dl>
-        </article>
-
-        <article class="indicator-group panel relationship-group">
-          <h3>Relationship</h3>
-          <dl>
-            <div>
-              <dt>Engagement</dt>
-              <dd>{{ accountData.engagementScore }}<small>/100</small></dd>
-            </div>
-            <div>
-              <dt>Last interaction</dt>
-              <dd class="date-value">{{ snapshotData.lastInteractionAt ? (snapshotData.lastInteractionAt | date: 'medium') : 'No interactions recorded' }}</dd>
-            </div>
-          </dl>
-        </article>
-      </div>
-    </section>
-  }
-
-  @if (analytics(); as analyticsData) {
-    <section class="analytics-section" aria-labelledby="analytics-title">
-      <div class="section-heading analytics-heading">
-        <div>
+    @if (analytics(); as analyticsData) {
+      <aside class="decision-column" aria-labelledby="analytics-title">
+        <div class="decision-heading">
           <p class="section-kicker">Decision support</p>
           <h2 id="analytics-title">Analytics summary</h2>
         </div>
-        <p>Scores and levels calculated by OpsPilot analytics.</p>
-      </div>
-
-      <div class="score-summary" aria-label="Account analytics scores">
-        <article class="score-summary-item panel">
-          <span>Risk</span>
-          <div><strong>{{ analyticsData.risk.score }}</strong><app-level-badge [level]="analyticsData.risk.level" /></div>
+        <article class="priority-command panel">
+          <span>Priority score</span><strong>{{ analyticsData.priorityScore }}</strong
+          ><app-level-badge [level]="analyticsData.priorityLevel" />
+          <p>Combined decision metric returned by OpsPilot analytics.</p>
         </article>
-        <article class="score-summary-item panel">
-          <span>Potential</span>
-          <div><strong>{{ analyticsData.potential.score }}</strong><app-level-badge [level]="analyticsData.potential.level" /></div>
-        </article>
-        <article class="score-summary-item priority-summary-item panel">
-          <span>Priority</span>
-          <div><strong>{{ analyticsData.priorityScore }}</strong><app-level-badge [level]="analyticsData.priorityLevel" /></div>
-        </article>
-      </div>
-
-      <div class="explainability-heading">
-        <div>
-          <p class="section-kicker">Explainable scoring</p>
-          <h3>What contributes to these scores</h3>
+        <div class="support-scores panel" aria-label="Supporting analytics scores">
+          <article>
+            <span>Risk</span><strong>{{ analyticsData.risk.score }}</strong
+            ><app-level-badge [level]="analyticsData.risk.level" />
+          </article>
+          <article>
+            <span>Potential</span><strong>{{ analyticsData.potential.score }}</strong
+            ><app-level-badge [level]="analyticsData.potential.level" />
+          </article>
         </div>
-        <p>Points below come directly from the backend assessment.</p>
-      </div>
-
-      <div class="analytics-grid">
-        <article class="breakdown-panel panel">
-          <header>
-            <div>
-              <span>Risk contribution</span>
-              <strong>{{ analyticsData.risk.score }} points</strong>
-            </div>
-            <app-level-badge [level]="analyticsData.risk.level" />
-          </header>
-          <dl class="factor-list">
-            @for (factor of riskFactors(); track factor.label) {
-              <div>
-                <dt>{{ factor.label }}</dt>
-                <dd>+{{ factor.value }}</dd>
-              </div>
-            }
-          </dl>
-        </article>
-
-        <article class="breakdown-panel panel">
-          <header>
-            <div>
-              <span>Potential contribution</span>
-              <strong>{{ analyticsData.potential.score }} points</strong>
-            </div>
-            <app-level-badge [level]="analyticsData.potential.level" />
-          </header>
-          <dl class="factor-list">
-            @for (factor of potentialFactors(); track factor.label) {
-              <div>
-                <dt>{{ factor.label }}</dt>
-                <dd>+{{ factor.value }}</dd>
-              </div>
-            }
-          </dl>
-        </article>
-      </div>
-    </section>
-  }
-
-  <p class="updated-at">Account record last updated {{ accountData.updatedAt | date: 'medium' }}.</p>
+        <div class="record-context">
+          <span>Account status</span><strong>{{ accountStatusLabel() }}</strong
+          ><span>Last updated</span><strong>{{ accountData.updatedAt | date: 'medium' }}</strong>
+        </div>
+      </aside>
+    }
+  </div>
 }

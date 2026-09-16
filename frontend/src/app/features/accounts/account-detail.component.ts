@@ -1,11 +1,22 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { AccountApiService } from '../../core/api/account-api.service';
-import { AccountAnalytics, AccountDetails, AccountOperationalSnapshot } from '../../core/models/account.models';
+import {
+  AccountAnalytics,
+  AccountDetails,
+  AccountOperationalSnapshot,
+} from '../../core/models/account.models';
 import { LevelBadgeComponent } from '../../shared/level-badge/level-badge.component';
 
 interface AnalyticsFactor {
@@ -17,7 +28,6 @@ interface AnalyticsFactor {
   selector: 'app-account-detail',
   imports: [DatePipe, DecimalPipe, RouterLink, LevelBadgeComponent],
   templateUrl: './account-detail.component.html',
-  styleUrl: './account-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountDetailComponent {
@@ -91,7 +101,9 @@ export class AccountDetailComponent {
           this.loading.set(false);
         },
         error: () => {
-          this.errorMessage.set('Unable to load account information. Check your connection and try again.');
+          this.errorMessage.set(
+            'Unable to load account information. Check your connection and try again.',
+          );
           this.loading.set(false);
         },
       });

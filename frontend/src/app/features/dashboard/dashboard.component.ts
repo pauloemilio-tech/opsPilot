@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { AccountApiService } from '../../core/api/account-api.service';
@@ -9,7 +16,6 @@ import { LevelBadgeComponent } from '../../shared/level-badge/level-badge.compon
   selector: 'app-dashboard',
   imports: [RouterLink, LevelBadgeComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
@@ -23,8 +29,7 @@ export class DashboardComponent {
     const priorities = this.priorities();
     return {
       total: priorities.length,
-      attention:
-        this.countByLevel(priorities, 'URGENT') + this.countByLevel(priorities, 'HIGH'),
+      attention: this.countByLevel(priorities, 'URGENT') + this.countByLevel(priorities, 'HIGH'),
       medium: this.countByLevel(priorities, 'MEDIUM'),
       low: this.countByLevel(priorities, 'LOW'),
     };
@@ -47,7 +52,9 @@ export class DashboardComponent {
           this.loading.set(false);
         },
         error: () => {
-          this.errorMessage.set('Unable to load account priorities. Check your connection and try again.');
+          this.errorMessage.set(
+            'Unable to load account priorities. Check your connection and try again.',
+          );
           this.loading.set(false);
         },
       });
