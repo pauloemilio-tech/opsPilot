@@ -14,5 +14,9 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.brand')?.textContent).toContain('OpsPilot');
     expect(compiled.querySelector('nav a')?.textContent).toContain('Dashboard');
+    expect(compiled.querySelector('nav a')?.getAttribute('href')).toBe('/dashboard');
+    expect(compiled.querySelector('app-theme-toggle button')?.getAttribute('aria-label')).toMatch(
+      /mode/,
+    );
   });
 });

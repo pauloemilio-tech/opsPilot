@@ -1,23 +1,28 @@
-<header class="app-header">
-  <div class="header-inner">
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Application sidebar">
     <a class="brand" routerLink="/dashboard" aria-label="OpsPilot dashboard">
-      <span class="brand-mark" aria-hidden="true">OP</span>
-      <span>
-        <strong>OpsPilot</strong>
-        <small>Operational Intelligence</small>
-      </span>
+      <span class="brand-mark" aria-hidden="true"><i></i><b>OP</b></span>
+      <span class="brand-copy"><strong>OpsPilot</strong><small>Operations desk</small></span>
     </a>
     <nav aria-label="Primary navigation">
-      <a routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">Dashboard</a>
+      <p>Workspace</p>
+      <a routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />
+        </svg>
+        <span>Dashboard</span>
+      </a>
     </nav>
-  </div>
-</header>
-
-<main class="app-main">
-  <router-outlet />
-</main>
-
-<footer class="app-footer">
-  <span>OpsPilot</span>
-  <span>Account operations, clearly prioritized.</span>
-</footer>
+    <div class="sidebar-footer">
+      <app-theme-toggle />
+    </div>
+  </aside>
+  <header class="mobile-header">
+    <a class="brand" routerLink="/dashboard" aria-label="OpsPilot dashboard">
+      <span class="brand-mark" aria-hidden="true"><i></i><b>OP</b></span>
+      <span class="brand-copy"><strong>OpsPilot</strong></span>
+    </a>
+    <app-theme-toggle />
+  </header>
+  <main class="app-main"><router-outlet /></main>
+</div>

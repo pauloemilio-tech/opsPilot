@@ -11,12 +11,24 @@ class AccountStubComponent {}
 
 const priorities: AccountPriority[] = [
   {
-    accountId: 'horizon-id', accountName: 'Horizon Supply', riskScore: 91, riskLevel: 'CRITICAL',
-    potentialScore: 17, potentialLevel: 'LOW', priorityScore: 61, priorityLevel: 'HIGH',
+    accountId: 'horizon-id',
+    accountName: 'Horizon Supply',
+    riskScore: 91,
+    riskLevel: 'CRITICAL',
+    potentialScore: 17,
+    potentialLevel: 'LOW',
+    priorityScore: 61,
+    priorityLevel: 'HIGH',
   },
   {
-    accountId: 'nova-id', accountName: 'Nova Distribution', riskScore: 4, riskLevel: 'LOW',
-    potentialScore: 86, potentialLevel: 'VERY_HIGH', priorityScore: 37, priorityLevel: 'MEDIUM',
+    accountId: 'nova-id',
+    accountName: 'Nova Distribution',
+    riskScore: 4,
+    riskLevel: 'LOW',
+    potentialScore: 86,
+    potentialLevel: 'VERY_HIGH',
+    priorityScore: 37,
+    priorityLevel: 'MEDIUM',
   },
 ];
 
@@ -48,13 +60,14 @@ describe('DashboardComponent', () => {
 
   it('renders the returned ranking in backend order with score levels', () => {
     const element = render();
-    const rows = [...element.querySelectorAll('tbody tr')];
+    const rows = [...element.querySelectorAll('.queue-row')];
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain('Horizon Supply');
     expect(rows[1].textContent).toContain('Nova Distribution');
     expect(rows[0].textContent).toContain('Critical');
     expect(rows[0].textContent).toContain('61');
     expect(element.textContent).toContain('Total monitored');
+    expect(element.querySelector('.queue-list')?.tagName).toBe('OL');
   });
 
   it('shows an intentional empty state', () => {
