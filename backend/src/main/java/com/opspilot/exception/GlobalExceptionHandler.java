@@ -1,5 +1,8 @@
 package com.opspilot.exception;
 
+import com.opspilot.ai.exception.AiConfigurationException;
+import com.opspilot.ai.exception.AiProviderResponseException;
+import com.opspilot.ai.exception.AiProviderUnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,30 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(AiConfigurationException.class)
+    public ResponseEntity<ApiError> handleAiConfiguration(
+            AiConfigurationException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, exception.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(AiProviderUnavailableException.class)
+    public ResponseEntity<ApiError> handleAiProviderUnavailable(
+            AiProviderUnavailableException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, exception.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(AiProviderResponseException.class)
+    public ResponseEntity<ApiError> handleAiProviderResponse(
+            AiProviderResponseException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(HttpStatus.BAD_GATEWAY, exception.getMessage(), request.getRequestURI());
     }
 
     private ResponseEntity<ApiError> buildResponse(HttpStatus status, String message, String path) {

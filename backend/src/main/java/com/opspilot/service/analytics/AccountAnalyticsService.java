@@ -35,6 +35,10 @@ public class AccountAnalyticsService {
 
     public AccountPriorityAssessment analyze(UUID accountId) {
         AccountOperationalSnapshot snapshot = accountOperationalService.getSnapshot(accountId);
+        return analyze(snapshot);
+    }
+
+    public AccountPriorityAssessment analyze(AccountOperationalSnapshot snapshot) {
         Instant referenceTime = clock.instant();
         AccountRiskAssessment risk = riskScoringService.assess(snapshot, referenceTime);
         AccountPotentialAssessment potential = potentialScoringService.assess(snapshot, referenceTime);

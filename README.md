@@ -47,6 +47,8 @@ No Windows PowerShell:
 
 A aplicação aceita as variáveis `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` e `SERVER_PORT`. Os valores padrão correspondem ao PostgreSQL do `docker-compose.yml` e à porta `8080`.
 
+O AI Account Analyst usa Claude por HTTP e é configurado com `AI_API_KEY` e `AI_MODEL`. Opcionalmente, `AI_BASE_URL`, `AI_CONNECT_TIMEOUT`, `AI_READ_TIMEOUT` e `AI_MAX_TOKENS` ajustam a integração. A ausência da chave ou do modelo não impede a inicialização; somente a chamada ao endpoint de AI retorna indisponibilidade.
+
 ### Dados de demonstração
 
 O profile `dev` carrega uma base fictícia, determinística e idempotente com diferentes cenários operacionais. O seed usa a referência fixa `2026-09-01T12:00:00Z` e não é executado em nenhum outro profile.
@@ -99,6 +101,7 @@ GET /api/accounts/{accountId}
 GET /api/accounts/{accountId}/snapshot
 GET /api/accounts/{accountId}/analytics
 GET /api/accounts/priorities
+POST /api/accounts/{accountId}/ai-analysis
 ```
 
 Com a aplicação executando no profile `dev`:
@@ -109,9 +112,12 @@ curl http://localhost:8080/api/accounts/{accountId}
 curl http://localhost:8080/api/accounts/{accountId}/snapshot
 curl http://localhost:8080/api/accounts/{accountId}/analytics
 curl http://localhost:8080/api/accounts/priorities
+curl -X POST http://localhost:8080/api/accounts/{accountId}/ai-analysis
 ```
 
 O analytics engine usa regras determinísticas e explicáveis. O Risk Score representa exposição operacional, o Potential Score representa oportunidade comercial e o Priority Score combina ambos para ordenar as contas que merecem atenção primeiro.
+
+O AI Account Analyst recebe um contexto estruturado produzido pelos serviços operacionais e de analytics e retorna `summary`, `keyConcerns` e `recommendedActions`. O LLM apenas interpreta fatos confiáveis: Risk, Potential e Priority continuam sendo calculados exclusivamente pelo analytics engine determinístico e não podem ser recalculados ou substituídos pela camada de AI.
 
 ## Testes e build
 
