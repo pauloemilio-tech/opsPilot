@@ -1,16 +1,9 @@
 <header class="page-header">
   <div>
-    <p class="eyebrow">Operations / Account priority</p>
+    <p class="page-context">Account operations</p>
     <h1>Attention queue</h1>
-    <p class="page-description">
-      The accounts that need intervention now, ranked by operational risk and commercial potential.
-    </p>
+    <p class="page-description">Accounts ranked by operational risk and commercial potential.</p>
   </div>
-  @if (!loading() && !errorMessage()) {
-    <div class="queue-state">
-      <span aria-hidden="true"></span><strong>{{ summary().total }}</strong> accounts monitored
-    </div>
-  }
 </header>
 
 @if (loading()) {
@@ -49,70 +42,90 @@
     </div>
   </section>
 } @else {
-  <section class="metric-strip" aria-label="Priority summary">
+  <dl class="metric-strip" aria-label="Priority summary">
     <div class="metric metric-total">
-      <span>Total monitored</span><strong>{{ summary().total }}</strong>
+      <dt>Total monitored</dt>
+      <dd>{{ summary().total }}</dd>
     </div>
     <div class="metric metric-attention">
-      <span>High / urgent</span><strong>{{ summary().attention }}</strong>
+      <dt>High / urgent</dt>
+      <dd>{{ summary().attention }}</dd>
     </div>
     <div class="metric">
-      <span>Medium</span><strong>{{ summary().medium }}</strong>
+      <dt>Medium</dt>
+      <dd>{{ summary().medium }}</dd>
     </div>
     <div class="metric">
-      <span>Low</span><strong>{{ summary().low }}</strong>
+      <dt>Low</dt>
+      <dd>{{ summary().low }}</dd>
     </div>
-  </section>
+  </dl>
 
   <section class="ranking panel" aria-labelledby="ranking-title">
     <header class="ranking-header">
       <div>
-        <p class="section-kicker">Live decision surface</p>
+        <span class="signal-line" aria-hidden="true"></span>
         <h2 id="ranking-title">Which accounts need attention right now?</h2>
       </div>
-      <p><span aria-hidden="true"></span> Backend-ranked order</p>
+      <p><span aria-hidden="true"></span>Backend-ranked order</p>
     </header>
     <div class="queue-labels" aria-hidden="true">
-      <span>Rank / Account</span><span>Risk</span><span>Potential</span><span>Priority</span
-      ><span></span>
+      <span>Rank</span><span>Account</span><span>Risk</span><span>Potential</span
+      ><span>Priority</span>
     </div>
     <ol class="queue-list">
       @for (priority of priorities(); track priority.accountId; let rank = $index) {
-        <li class="queue-row">
+        <li
+          class="queue-row"
+          [class.priority-high]="priority.priorityLevel === 'HIGH'"
+          [class.priority-urgent]="priority.priorityLevel === 'URGENT'"
+        >
+          <div class="rank-cell">
+            <span aria-hidden="true">{{ (rank + 1).toString().padStart(2, '0') }}</span>
+            <span class="visually-hidden">Rank {{ rank + 1 }}</span>
+          </div>
           <div class="account-cell">
-            <span class="rank">{{ (rank + 1).toString().padStart(2, '0') }}</span>
-            <div>
-              <span class="mobile-label">Rank {{ rank + 1 }}</span
-              ><a class="account-link" [routerLink]="['/accounts', priority.accountId]">{{
-                priority.accountName
-              }}</a
-              ><small>Account record</small>
-            </div>
+            <a class="account-link" [routerLink]="['/accounts', priority.accountId]">
+              {{ priority.accountName }}
+            </a>
           </div>
-          <div class="score-cell risk-score">
-            <span class="mobile-label">Risk</span>
-            <div>
-              <strong>{{ priority.riskScore }}</strong
-              ><app-level-badge [level]="priority.riskLevel" />
-            </div>
-          </div>
-          <div class="score-cell">
-            <span class="mobile-label">Potential</span>
-            <div>
-              <strong>{{ priority.potentialScore }}</strong
-              ><app-level-badge [level]="priority.potentialLevel" />
-            </div>
-          </div>
-          <div class="priority-cell">
-            <span class="mobile-label">Priority</span><strong>{{ priority.priorityScore }}</strong
-            ><app-level-badge [level]="priority.priorityLevel" />
-          </div>
-          <a
-            class="row-action"
-            [routerLink]="['/accounts', priority.accountId]"
-            [attr.aria-label]="'View ' + priority.accountName"
-            ><span>View</span><b aria-hidden="true">→</b></a
+          <div
+            class="score-cell risk-score"
+            role="group"
+            [attr.aria-label]="'Risk: ' + priority.riskScore + ', ' + priority.riskLevel"
           >
+            <span class="score-label" aria-hidden="true">Risk</span>
+            <div aria-hidden="true">
+              <strong>{{ priority.riskScore }}</strong>
+              <app-level-badge [level]="priority.riskLevel" />
+            </div>
+          </div>
+          <div
+            class="score-cell potential-score"
+            role="group"
+            [attr.aria-label]="
+              'Potential: ' + priority.potentialScore + ', ' + priority.potentialLevel
+            "
+          >
+            <span class="score-label" aria-hidden="true">Potential</span>
+            <div aria-hidden="true">
+              <strong>{{ priority.potentialScore }}</strong>
+              <app-level-badge [level]="priority.potentialLevel" />
+            </div>
+          </div>
+          <div
+            class="priority-cell"
+            role="group"
+            [attr.aria-label]="
+              'Priority: ' + priority.priorityScore + ', ' + priority.priorityLevel
+            "
+          >
+            <span class="score-label" aria-hidden="true">Priority</span>
+            <div aria-hidden="true">
+              <strong>{{ priority.priorityScore }}</strong>
+              <app-level-badge [level]="priority.priorityLevel" />
+            </div>
+          </div>
         </li>
       }
     </ol>
