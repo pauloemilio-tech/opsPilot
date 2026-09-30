@@ -1,28 +1,34 @@
 <div class="app-shell">
-  <aside class="sidebar" aria-label="Application sidebar">
-    <a class="brand" routerLink="/dashboard" aria-label="OpsPilot dashboard">
-      <span class="brand-mark" aria-hidden="true"><i></i><b>OP</b></span>
-      <span class="brand-copy"><strong>OpsPilot</strong><small>Operations desk</small></span>
-    </a>
-    <nav aria-label="Primary navigation">
-      <p>Workspace</p>
-      <a routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">
-        <svg aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />
-        </svg>
-        <span>Dashboard</span>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" routerLink="/">
+        <img
+          [src]="
+            themeService.theme() === 'light'
+              ? '/assets/opsPilot.logoLight.png'
+              : '/assets/opsPilot.logoDark.png'
+          "
+          alt="OpsPilot — Signal workspace"
+        />
       </a>
-    </nav>
-    <div class="sidebar-footer">
-      <app-theme-toggle />
+      <nav aria-label="Primary navigation">
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
+        >
+          Home
+        </a>
+        <a routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">
+          Dashboard
+        </a>
+      </nav>
+      <div class="header-actions">
+        <app-theme-toggle />
+      </div>
     </div>
-  </aside>
-  <header class="mobile-header">
-    <a class="brand" routerLink="/dashboard" aria-label="OpsPilot dashboard">
-      <span class="brand-mark" aria-hidden="true"><i></i><b>OP</b></span>
-      <span class="brand-copy"><strong>OpsPilot</strong></span>
-    </a>
-    <app-theme-toggle />
   </header>
-  <main class="app-main"><router-outlet /></main>
+  <main id="main-content" class="app-main" tabindex="-1"><router-outlet /></main>
 </div>

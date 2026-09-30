@@ -68,6 +68,13 @@ describe('DashboardComponent', () => {
     expect(rows[0].textContent).toContain('61');
     expect(element.textContent).toContain('Total monitored');
     expect(element.querySelector('.queue-list')?.tagName).toBe('OL');
+    expect(rows[0].querySelector('.risk-score')?.getAttribute('aria-label')).toBe(
+      'Risk: 91, CRITICAL',
+    );
+    expect(rows[0].querySelector('.priority-cell')?.getAttribute('aria-label')).toBe(
+      'Priority: 61, HIGH',
+    );
+    expect(rows[0].querySelectorAll('a')).toHaveLength(1);
   });
 
   it('shows an intentional empty state', () => {

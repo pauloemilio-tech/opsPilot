@@ -1,40 +1,50 @@
 .level-badge {
+  min-height: 25px;
+  padding: 3px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-text-muted);
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  padding: 2px 8px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  font-size: 0.67rem;
-  font-weight: 800;
-  letter-spacing: 0.055em;
+  font-size: 0.75rem;
+  font-weight: 650;
   line-height: 1;
   white-space: nowrap;
 }
 
 .level-low {
-  border-color: color-mix(in srgb, var(--color-success) 35%, transparent);
+  border-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border));
   background: var(--color-success-soft);
   color: var(--color-success);
 }
+
 .level-medium {
-  border-color: color-mix(in srgb, var(--color-highlight) 38%, transparent);
-  background: var(--color-highlight-soft);
-  color: var(--color-highlight);
+  border-color: var(--color-border-strong);
+  background: color-mix(in srgb, var(--color-surface-muted) 68%, transparent);
+  color: var(--color-text-muted);
 }
+
 .level-high {
-  border-color: color-mix(in srgb, var(--color-danger) 32%, transparent);
+  border-color: color-mix(in srgb, var(--color-highlight) 48%, var(--color-border));
+  background: var(--color-highlight-soft);
+  color: var(--color-text);
+}
+
+.level-critical {
+  border-color: color-mix(in srgb, var(--color-danger) 52%, var(--color-border));
   background: var(--color-danger-soft);
   color: var(--color-danger);
 }
-.level-critical,
+
 .level-urgent {
-  border-color: color-mix(in srgb, var(--color-danger) 48%, transparent);
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
+  border-color: var(--color-highlight);
+  background: var(--color-highlight);
+  color: var(--color-on-highlight);
 }
+
 .level-very-high {
-  border-color: color-mix(in srgb, var(--color-info) 38%, transparent);
-  background: var(--color-accent-soft);
-  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-potential) 48%, var(--color-border));
+  background: var(--color-potential-soft);
+  color: var(--color-potential);
 }

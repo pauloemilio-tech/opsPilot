@@ -1,0 +1,87 @@
+<section class="home-hero" aria-labelledby="home-title">
+  <div class="hero-copy">
+    <p class="hero-context"><span aria-hidden="true"></span>Operational intelligence</p>
+    <h1 id="home-title" class="hero-title">Turn account signals into explainable priorities.</h1>
+    <p class="hero-summary">
+      OpsPilot consolidates operational account data, calculates Risk, Potential and Priority, and
+      shows which accounts need attention first.
+    </p>
+    <div class="hero-actions">
+      <a class="primary-action" routerLink="/dashboard">Open attention queue</a>
+      <a class="secondary-action" href="#priority-model">See how priorities work</a>
+    </div>
+  </div>
+
+  <p class="visually-hidden">
+    Operational account signals feed deterministic Risk and Potential scoring, producing a ranked
+    Priority decision.
+  </p>
+  <div class="signal-preview" aria-hidden="true">
+    <header class="preview-header">
+      <div><span></span><strong>OpsPilot</strong></div>
+      <p>Decision surface</p>
+      <i></i>
+    </header>
+    <div class="preview-body">
+      <section class="signal-source">
+        <p>Account signals</p>
+        <ul>
+          <li><span></span>Revenue movement</li>
+          <li><span></span>Delayed orders</li>
+          <li><span></span>Support pressure</li>
+          <li><span></span>Engagement</li>
+        </ul>
+      </section>
+      <section class="score-stage">
+        <p>Deterministic analytics</p>
+        <div class="score-node risk-node">
+          <span>Risk</span>
+          <small>Operational exposure</small>
+        </div>
+        <div class="score-node potential-node">
+          <span>Potential</span>
+          <small>Commercial opportunity</small>
+        </div>
+      </section>
+      <section class="priority-stage">
+        <p>Decision output</p>
+        <span class="priority-signal"></span>
+        <strong>Priority</strong>
+        <small>Ranked attention, backed by visible factors.</small>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section id="priority-model" class="priority-model" aria-labelledby="priority-model-title">
+  <header>
+    <p>From signal to decision</p>
+    <h2 id="priority-model-title">One ranked queue. Every score accounted for.</h2>
+    <span>
+      OpsPilot keeps the path from operational evidence to account priority clear and deterministic.
+    </span>
+  </header>
+  <ol class="priority-steps">
+    <li>
+      <span>01</span>
+      <div>
+        <h3>Consolidate account signals</h3>
+        <p>Bring commercial, operational and relationship indicators into one account view.</p>
+      </div>
+    </li>
+    <li>
+      <span>02</span>
+      <div>
+        <h3>Calculate Risk and Potential</h3>
+        <p>Apply deterministic rules to measure exposure and commercial opportunity.</p>
+      </div>
+    </li>
+    <li>
+      <span>03</span>
+      <div>
+        <h3>Rank by Priority</h3>
+        <p>Present the backend-defined order so teams know where attention belongs first.</p>
+      </div>
+    </li>
+  </ol>
+</section>
