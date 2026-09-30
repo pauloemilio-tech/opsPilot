@@ -23,3 +23,12 @@ server:
 logging:
   level:
     org.hibernate.SQL: ${HIBERNATE_SQL_LOG_LEVEL:WARN}
+
+opspilot:
+  ai:
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:}
+    base-url: ${AI_BASE_URL:https://api.anthropic.com/v1}
+    connect-timeout: ${AI_CONNECT_TIMEOUT:5s}
+    read-timeout: ${AI_READ_TIMEOUT:30s}
+    max-tokens: ${AI_MAX_TOKENS:1200}

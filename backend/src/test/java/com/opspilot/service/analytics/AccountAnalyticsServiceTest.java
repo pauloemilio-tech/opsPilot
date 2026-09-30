@@ -82,6 +82,23 @@ class AccountAnalyticsServiceTest {
     }
 
     @Test
+    void shouldAnalyzeProvidedSnapshotWithoutLoadingAnotherOne() {
+        UUID accountId = UUID.randomUUID();
+        AccountOperationalSnapshot snapshot = snapshot(accountId, "Trusted Snapshot");
+        AccountRiskAssessment risk = risk(50);
+        AccountPotentialAssessment potential = potential(80);
+        when(riskScoringService.assess(snapshot, REFERENCE_TIME)).thenReturn(risk);
+        when(potentialScoringService.assess(snapshot, REFERENCE_TIME)).thenReturn(potential);
+
+        AccountPriorityAssessment result = service.analyze(snapshot);
+
+        assertThat(result.risk()).isSameAs(risk);
+        assertThat(result.potential()).isSameAs(potential);
+        assertThat(result.priorityScore()).isEqualTo(62);
+        verify(accountOperationalService, never()).getSnapshot(accountId);
+    }
+
+    @Test
     void shouldPropagateAccountNotFound() {
         UUID accountId = UUID.randomUUID();
         when(accountOperationalService.getSnapshot(accountId)).thenThrow(new AccountNotFoundException(accountId));
