@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   AccountAnalytics,
+  AccountAiAnalysis,
   AccountDetails,
   AccountOperationalSnapshot,
   AccountPriority,
@@ -80,5 +81,9 @@ export class AccountApiService {
       `${this.baseUrl}/${accountId}/interactions`,
       request,
     );
+  }
+
+  analyzeAccount(accountId: string): Observable<AccountAiAnalysis> {
+    return this.http.post<AccountAiAnalysis>(`${this.baseUrl}/${accountId}/ai-analysis`, null);
   }
 }

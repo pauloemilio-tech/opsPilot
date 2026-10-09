@@ -8,7 +8,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AccountApiService } from '../../core/api/account-api.service';
 import {
-  AccountAnalytics, AccountDetails, AccountOperationalSnapshot, AccountStatus, AccountWriteRequest,
+  AccountAiAnalysis, AccountAnalytics, AccountDetails, AccountOperationalSnapshot, AccountStatus, AccountWriteRequest,
   InteractionRecord, InteractionType, OrderRecord, OrderStatus, SupportTicketRecord,
   TicketPriority, TicketStatus,
 } from '../../core/models/account.models';
@@ -30,6 +30,7 @@ export class AccountDetailComponent {
   private readonly title = inject(Title);
   private readonly formBuilder = inject(FormBuilder);
   private readonly accountId = this.route.snapshot.paramMap.get('accountId');
+  private aiRequestVersion = 0;
 
   protected readonly account = signal<AccountDetails | null>(null);
   protected readonly snapshot = signal<AccountOperationalSnapshot | null>(null);
@@ -37,6 +38,9 @@ export class AccountDetailComponent {
   protected readonly orders = signal<OrderRecord[]>([]);
   protected readonly tickets = signal<SupportTicketRecord[]>([]);
   protected readonly interactions = signal<InteractionRecord[]>([]);
+  protected readonly aiAnalysis = signal<AccountAiAnalysis | null>(null);
+  protected readonly aiLoading = signal(false);
+  protected readonly aiError = signal<string | null>(null);
   protected readonly loading = signal(true);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
@@ -115,7 +119,7 @@ export class AccountDetailComponent {
     if (!this.accountId || this.accountForm.invalid) { this.accountForm.markAllAsTouched(); return; }
     this.startSubmit();
     this.accountApi.updateAccount(this.accountId, this.accountRequest()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => { this.editOpen.set(false); this.refreshAccountData(false, 'Account details updated. Analytics refreshed.'); },
+      next: () => { this.invalidateAiAnalysis(); this.editOpen.set(false); this.refreshAccountData(false, 'Account details updated. Analytics refreshed.'); },
       error: (error: HttpErrorResponse) => this.failSubmit(error, 'Unable to update this account.'),
     });
   }
@@ -131,7 +135,7 @@ export class AccountDetailComponent {
       orderedAt: this.toInstant(value.orderedAt), expectedDeliveryAt: this.optionalInstant(value.expectedDeliveryAt),
       deliveredAt: this.optionalInstant(value.deliveredAt),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => { this.orderForm.reset({ amount: 0, status: 'PENDING' }); this.activeForm.set(null); this.refreshAccountData(false, 'Order recorded. Snapshot and analytics refreshed.'); },
+      next: () => { this.invalidateAiAnalysis(); this.orderForm.reset({ amount: 0, status: 'PENDING' }); this.activeForm.set(null); this.refreshAccountData(false, 'Order recorded. Snapshot and analytics refreshed.'); },
       error: (error: HttpErrorResponse) => this.failSubmit(error, 'Unable to record this order.'),
     });
   }
@@ -146,7 +150,7 @@ export class AccountDetailComponent {
       subject: value.subject.trim(), status: value.status, priority: value.priority,
       openedAt: this.toInstant(value.openedAt), resolvedAt: this.optionalInstant(value.resolvedAt),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => { this.ticketForm.reset({ status: 'OPEN', priority: 'MEDIUM' }); this.activeForm.set(null); this.refreshAccountData(false, 'Support ticket recorded. Snapshot and analytics refreshed.'); },
+      next: () => { this.invalidateAiAnalysis(); this.ticketForm.reset({ status: 'OPEN', priority: 'MEDIUM' }); this.activeForm.set(null); this.refreshAccountData(false, 'Support ticket recorded. Snapshot and analytics refreshed.'); },
       error: (error: HttpErrorResponse) => this.failSubmit(error, 'Unable to record this support ticket.'),
     });
   }
@@ -157,9 +161,31 @@ export class AccountDetailComponent {
     this.accountApi.createInteraction(this.accountId, {
       type: value.type, summary: value.summary.trim(), occurredAt: this.toInstant(value.occurredAt),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => { this.interactionForm.reset({ type: 'CALL' }); this.activeForm.set(null); this.refreshAccountData(false, 'Interaction recorded. Snapshot and analytics refreshed.'); },
+      next: () => { this.invalidateAiAnalysis(); this.interactionForm.reset({ type: 'CALL' }); this.activeForm.set(null); this.refreshAccountData(false, 'Interaction recorded. Snapshot and analytics refreshed.'); },
       error: (error: HttpErrorResponse) => this.failSubmit(error, 'Unable to record this interaction.'),
     });
+  }
+
+  protected analyzeAccount(): void {
+    if (!this.accountId || this.aiLoading()) return;
+    const requestVersion = ++this.aiRequestVersion;
+    this.aiLoading.set(true);
+    this.aiError.set(null);
+    this.aiAnalysis.set(null);
+    this.accountApi.analyzeAccount(this.accountId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (analysis) => {
+          if (requestVersion !== this.aiRequestVersion) return;
+          this.aiAnalysis.set(analysis);
+          this.aiLoading.set(false);
+        },
+        error: (error: HttpErrorResponse) => {
+          if (requestVersion !== this.aiRequestVersion) return;
+          this.aiError.set(this.aiErrorMessage(error));
+          this.aiLoading.set(false);
+        },
+      });
   }
 
   private refreshAccountData(showLoading: boolean, success?: string): void {
@@ -196,6 +222,12 @@ export class AccountDetailComponent {
   private startSubmit(): void { this.submitting.set(true); this.clearFeedback(); }
   private failSubmit(error: HttpErrorResponse, fallback: string): void { this.formError.set(this.messageFor(error, fallback)); this.submitting.set(false); }
   private clearFeedback(): void { this.formError.set(null); this.successMessage.set(null); }
+  private invalidateAiAnalysis(): void {
+    this.aiRequestVersion++;
+    this.aiAnalysis.set(null);
+    this.aiError.set(null);
+    this.aiLoading.set(false);
+  }
   private toInstant(value: string): string { return new Date(value).toISOString(); }
   private optionalInstant(value: string): string | null { return value ? this.toInstant(value) : null; }
   private orderDateError(value: ReturnType<typeof this.orderForm.getRawValue>): string | null {
@@ -218,6 +250,11 @@ export class AccountDetailComponent {
     if (error.status === 404) return 'This account no longer exists.';
     if (error.status === 400 && typeof error.error?.message === 'string') return `Check the submitted fields: ${error.error.message}`;
     return error.status === 0 ? 'Unable to reach OpsPilot. Check your connection.' : fallback;
+  }
+  private aiErrorMessage(error: HttpErrorResponse): string {
+    if (error.status === 503) return 'AI analysis is currently unavailable.';
+    if (error.status === 502) return 'OpsPilot could not produce a valid analysis. Try again.';
+    return 'Unable to generate the analysis right now.';
   }
 }
 

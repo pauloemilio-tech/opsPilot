@@ -63,4 +63,12 @@ describe('AccountApiService', () => {
       requests.forEach((request) => request.flush(path === 'orders' ? {} : {}));
     }
   });
+
+  it('posts to the account AI analysis endpoint', () => {
+    service.analyzeAccount('account-1').subscribe();
+    const request = http.expectOne('/api/accounts/account-1/ai-analysis');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toBeNull();
+    request.flush({ summary: 'Current context', keyConcerns: [], recommendedActions: [] });
+  });
 });
