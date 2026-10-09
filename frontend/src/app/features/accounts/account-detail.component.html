@@ -351,4 +351,65 @@
       </article>
     </div>
   </section>
+
+  <section class="ai-analyst-section" aria-labelledby="ai-analyst-title">
+    <div class="ai-analyst-panel panel">
+      <header class="ai-analyst-header">
+        <div>
+          <p class="section-kicker">AI-assisted interpretation</p>
+          <h2 id="ai-analyst-title">AI Account Analyst</h2>
+          <p>Interpret the current trusted operational context and deterministic analytics.</p>
+        </div>
+        <button class="button button-secondary" type="button" (click)="analyzeAccount()" [disabled]="aiLoading()">
+          {{ aiAnalysis() ? 'Regenerate analysis' : 'Generate analysis' }}
+        </button>
+      </header>
+      <p class="ai-grounding-note">Risk, Potential and Priority remain deterministic OpsPilot analytics.</p>
+
+      @if (aiLoading()) {
+        <div class="ai-status" role="status" aria-live="polite">
+          <strong>Analyzing current account context...</strong>
+          <span>The account page remains available while OpsPilot requests an interpretation.</span>
+        </div>
+      } @else if (aiError()) {
+        <div class="ai-status ai-error" role="alert">
+          <strong>{{ aiError() }}</strong>
+          <span>No analysis was generated. You can try the request again.</span>
+        </div>
+      } @else if (aiAnalysis(); as analysis) {
+        <div class="ai-analysis-result">
+          <section aria-labelledby="ai-summary-title">
+            <h3 id="ai-summary-title">Summary</h3>
+            <p class="ai-summary">{{ analysis.summary }}</p>
+          </section>
+          <section aria-labelledby="ai-concerns-title">
+            <h3 id="ai-concerns-title">Key concerns</h3>
+            @if (analysis.keyConcerns.length === 0) {
+              <p class="ai-empty">No key concerns were identified in the current context.</p>
+            } @else {
+              <ul class="ai-concern-list">
+                @for (concern of analysis.keyConcerns; track $index) { <li>{{ concern }}</li> }
+              </ul>
+            }
+          </section>
+          <section aria-labelledby="ai-actions-title">
+            <h3 id="ai-actions-title">Recommended actions</h3>
+            @if (analysis.recommendedActions.length === 0) {
+              <p class="ai-empty">No recommended actions were returned.</p>
+            } @else {
+              <ol class="ai-action-list">
+                @for (recommendation of analysis.recommendedActions; track $index) {
+                  <li><h4>{{ recommendation.action }}</h4><p><span>Evidence</span>{{ recommendation.evidence }}</p></li>
+                }
+              </ol>
+            }
+          </section>
+        </div>
+      } @else {
+        <div class="ai-initial-state">
+          <p>Generate an on-demand interpretation of the account context currently shown above.</p>
+        </div>
+      }
+    </div>
+  </section>
 }

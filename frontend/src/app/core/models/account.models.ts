@@ -129,3 +129,14 @@ export interface InteractionRecord extends InteractionCreateRequest {
   accountId: string;
   createdAt: string;
 }
+
+export interface RecommendedAction {
+  action: string;
+  evidence: string;
+}
+
+export interface AccountAiAnalysis {
+  summary: string;
+  keyConcerns: string[];
+  recommendedActions: RecommendedAction[];
+}
