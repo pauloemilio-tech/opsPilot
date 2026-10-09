@@ -284,7 +284,7 @@ Every score presentation includes:
 
 ## 13. Account details and explainability
 
-This section defines the later direction; it is not part of the first pilot implementation.
+Account Detail implements the explainability workspace for an individual account.
 
 Use a 12-column desktop layout:
 
@@ -297,11 +297,15 @@ Recommended reading order:
 2. Priority decision with supporting Risk and Potential scores.
 3. Operational indicators grouped as commercial, operations, and relationship evidence.
 4. Risk and Potential contribution lists.
-5. Record context and update time.
+5. Persisted orders, support tickets, and interactions.
+6. On-demand AI Account Analyst interpretation.
+7. Record context and update time.
 
 Contribution graphics must not imply a false percentage. Prefer ranked point-contribution rows with exact `+N` values. A bar may be used only when its denominator or maximum is explicit and truthful.
 
-Do not display an AI narrative, recommended action, automation control, or generated explanation until the corresponding feature and contract exist.
+The AI Account Analyst appears after deterministic evidence and operational records. It may display
+only the structured summary, key concerns, recommended actions, and evidence returned by the
+implemented backend contract. It must not visually replace or recalculate Risk, Potential, or Priority.
 
 ## 14. Dotted background treatment
 
@@ -465,36 +469,22 @@ Each account remains one coherent row/card unit in the ordered sequence. Score l
 - No gradient glow, glassmorphism, neon outline, or animated background.
 - No dotted texture inside dense data surfaces.
 - No invented trend arrows, recommendations, reasons, timestamps, or operational status.
-- No AI analyst input, sparkle icon, automation action, or RAG control before implementation.
+- No chatbot input, sparkle treatment, automation action, or RAG control around the AI Account Analyst.
 - No client-side reordering of the Attention Queue.
 - No ambiguous contribution bar presented as a percentage when it represents points.
 - No framework or animation library for effects achievable with modern CSS.
 
-## 22. Pilot implementation scope
+## 22. Current MVP surfaces
 
-After explicit approval, the first implementation is limited to:
+The approved Signal Workspace system now covers:
 
-- application-shell changes required for the compact top header;
-- global semantic design tokens and dark/light foundations;
-- `/dashboard` composition;
-- the Attention Queue;
-- existing loading, empty, error, and retry states as they appear on the dashboard;
-- accessibility corrections required by those changes.
+- the compact application shell and Home product story;
+- account creation and operational data management;
+- the backend-ranked Dashboard Attention Queue;
+- Account Detail decision scores, operational evidence, and exact factor contributions;
+- persisted order, support ticket, and interaction records;
+- the on-demand AI Account Analyst below the deterministic decision layer;
+- loading, empty, error, retry, light/dark theme, and responsive states.
 
-The pilot does **not** include:
-
-- account-detail redesign;
-- backend, API, model, route, ranking, or analytics changes;
-- AI Account Analyst, automation, or RAG UI;
-- new dependencies, UI frameworks, or animation libraries;
-- speculative navigation destinations.
-
-The dashboard must remain directly accessible for browser review. Expansion to account detail begins only after the user approves the pilot's visual direction.
-
-## Open decisions for approval
-
-1. Confirm the compact top header and removal of the desktop sidebar for the pilot.
-2. Confirm `1680px` as the desktop workspace maximum, with responsive `32–64px` gutters.
-3. Confirm that only `URGENT` receives the strongest yellow Priority treatment while `HIGH` uses a restrained signal marker.
-4. Confirm the system-native typography stack for the pilot, deferring any external font decision.
-5. Reattach the Leo Studio screenshot if a visual-specific comparison is required before implementation; the current attachment did not include it.
+The MVP still excludes speculative destinations and controls for automation, RAG, external
+integrations, settings, authentication, and persistent AI history.

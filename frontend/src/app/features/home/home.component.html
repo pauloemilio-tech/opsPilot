@@ -1,20 +1,20 @@
 <section class="home-hero" aria-labelledby="home-title">
   <div class="hero-copy">
-    <p class="hero-context"><span aria-hidden="true"></span>Operational intelligence</p>
+    <p class="hero-context"><span aria-hidden="true"></span>Operational intelligence for account teams</p>
     <h1 id="home-title" class="hero-title">Turn account signals into explainable priorities.</h1>
     <p class="hero-summary">
-      OpsPilot consolidates operational account data, calculates Risk, Potential and Priority, and
-      shows which accounts need attention first.
+      OpsPilot brings together revenue, orders, support activity and engagement, calculates
+      explainable Risk, Potential and Priority, and helps teams decide which account needs attention first.
     </p>
     <div class="hero-actions">
       <a class="primary-action" routerLink="/dashboard">Open attention queue</a>
-      <a class="secondary-action" href="#priority-model">See how priorities work</a>
+      <a class="secondary-action" routerLink="/accounts">Manage accounts</a>
     </div>
   </div>
 
   <p class="visually-hidden">
     Operational account signals feed deterministic Risk and Potential scoring, producing a ranked
-    Priority decision.
+    Priority decision backed by visible evidence.
   </p>
   <div class="signal-preview" aria-hidden="true">
     <header class="preview-header">
@@ -27,21 +27,15 @@
         <p>Account signals</p>
         <ul>
           <li><span></span>Revenue movement</li>
-          <li><span></span>Delayed orders</li>
-          <li><span></span>Support pressure</li>
+          <li><span></span>Orders</li>
+          <li><span></span>Support activity</li>
           <li><span></span>Engagement</li>
         </ul>
       </section>
       <section class="score-stage">
         <p>Deterministic analytics</p>
-        <div class="score-node risk-node">
-          <span>Risk</span>
-          <small>Operational exposure</small>
-        </div>
-        <div class="score-node potential-node">
-          <span>Potential</span>
-          <small>Commercial opportunity</small>
-        </div>
+        <div class="score-node risk-node"><span>Risk</span><small>Operational exposure</small></div>
+        <div class="score-node potential-node"><span>Potential</span><small>Commercial opportunity</small></div>
       </section>
       <section class="priority-stage">
         <p>Decision output</p>
@@ -53,35 +47,82 @@
   </div>
 </section>
 
+<section class="story-section signal-foundation" aria-labelledby="signals-heading">
+  <header class="story-heading">
+    <p>Operational foundation</p>
+    <h2 id="signals-heading">One account view, built from operational signals.</h2>
+    <span>Record and inspect the real business context that feeds each account decision.</span>
+  </header>
+  <dl class="signal-categories">
+    <div><dt>Revenue</dt><dd>Current and previous monthly revenue establish commercial movement.</dd></div>
+    <div><dt>Orders</dt><dd>Order status and delivery dates expose operational friction.</dd></div>
+    <div><dt>Support</dt><dd>Open and critical tickets show current service pressure.</dd></div>
+    <div><dt>Engagement</dt><dd>Engagement scores and interactions provide relationship context.</dd></div>
+  </dl>
+</section>
+
+<section class="story-section intelligence-section" aria-labelledby="intelligence-heading">
+  <div class="intelligence-copy">
+    <p class="story-kicker">Deterministic intelligence</p>
+    <h2 id="intelligence-heading">Rules produce the scores. Evidence keeps them auditable.</h2>
+    <p>
+      The backend builds a trusted account snapshot and calculates every decision metric. The LLM
+      does not set or replace these scores.
+    </p>
+  </div>
+  <dl class="intelligence-rail">
+    <div class="metric-risk"><dt>Risk</dt><dd>Operational exposure</dd></div>
+    <div class="metric-potential"><dt>Potential</dt><dd>Commercial opportunity</dd></div>
+    <div class="metric-priority"><dt>Priority</dt><dd>Combined decision metric used to rank the queue</dd></div>
+  </dl>
+</section>
+
+<section class="story-section explainability-section" aria-labelledby="explainability-heading">
+  <div class="explainability-copy">
+    <p class="story-kicker">Explainable prioritization</p>
+    <h2 id="explainability-heading">Every priority can be traced back to the signals behind it.</h2>
+    <p>
+      Start with the backend-ranked Attention Queue, open an account, then inspect its operational
+      evidence and the exact point contributions returned by Risk and Potential assessments.
+    </p>
+    <a class="text-action" routerLink="/dashboard">Explore the attention queue <span aria-hidden="true">→</span></a>
+  </div>
+  <ol class="evidence-path" aria-label="Account investigation path">
+    <li><span>01</span><div><strong>Ranked attention</strong><p>Priority determines the account order.</p></div></li>
+    <li><span>02</span><div><strong>Account evidence</strong><p>Revenue, operations and relationship signals remain visible.</p></div></li>
+    <li><span>03</span><div><strong>Factor contributions</strong><p>Exact backend assessment points explain each score.</p></div></li>
+  </ol>
+</section>
+
+<section class="story-section ai-story-section" aria-labelledby="ai-heading">
+  <div class="ai-story-copy">
+    <p class="story-kicker">AI-assisted interpretation</p>
+    <h2 id="ai-heading">AI interprets the context. OpsPilot keeps the decision auditable.</h2>
+    <p>
+      On request, the AI Account Analyst consumes trusted structured account context, summarizes
+      the situation, identifies key concerns and suggests actions with supporting evidence.
+    </p>
+    <strong>Risk, Potential and Priority remain deterministic.</strong>
+  </div>
+  <div class="ai-output-map" aria-hidden="true">
+    <span>Trusted account context</span>
+    <i></i>
+    <div><strong>Summary</strong><strong>Key concerns</strong><strong>Actions + evidence</strong></div>
+  </div>
+</section>
+
 <section id="priority-model" class="priority-model" aria-labelledby="priority-model-title">
   <header>
     <p>From signal to decision</p>
-    <h2 id="priority-model-title">One ranked queue. Every score accounted for.</h2>
-    <span>
-      OpsPilot keeps the path from operational evidence to account priority clear and deterministic.
-    </span>
+    <h2 id="priority-model-title">A complete path from operational data to informed action.</h2>
+    <span>Each stage is implemented in the current OpsPilot workflow.</span>
   </header>
   <ol class="priority-steps">
-    <li>
-      <span>01</span>
-      <div>
-        <h3>Consolidate account signals</h3>
-        <p>Bring commercial, operational and relationship indicators into one account view.</p>
-      </div>
-    </li>
-    <li>
-      <span>02</span>
-      <div>
-        <h3>Calculate Risk and Potential</h3>
-        <p>Apply deterministic rules to measure exposure and commercial opportunity.</p>
-      </div>
-    </li>
-    <li>
-      <span>03</span>
-      <div>
-        <h3>Rank by Priority</h3>
-        <p>Present the backend-defined order so teams know where attention belongs first.</p>
-      </div>
-    </li>
+    <li><span>01</span><div><h3>Record operational data</h3><p>Create accounts and add orders, support tickets and interactions.</p></div></li>
+    <li><span>02</span><div><h3>Build trusted context</h3><p>Consolidate current account values and operational indicators into a snapshot.</p></div></li>
+    <li><span>03</span><div><h3>Calculate intelligence</h3><p>Apply backend rules for deterministic Risk, Potential and Priority.</p></div></li>
+    <li><span>04</span><div><h3>Rank attention</h3><p>Present accounts in the backend-defined Priority order.</p></div></li>
+    <li><span>05</span><div><h3>Investigate evidence</h3><p>Inspect metrics, factor contributions and persisted operational records.</p></div></li>
+    <li><span>06</span><div><h3>Generate AI analysis</h3><p>Request a grounded summary, concerns and recommended actions with evidence.</p></div></li>
   </ol>
 </section>
