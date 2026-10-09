@@ -23,8 +23,8 @@ describe('App', () => {
     expect(logo?.getAttribute('src')).toBe('/assets/opsPilot.logoDark.png');
 
     const links = [...compiled.querySelectorAll<HTMLAnchorElement>('nav a')];
-    expect(links.map((link) => link.textContent?.trim())).toEqual(['Home', 'Dashboard']);
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/', '/dashboard']);
+    expect(links.map((link) => link.textContent?.trim())).toEqual(['Home', 'Dashboard', 'Accounts']);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/', '/dashboard', '/accounts']);
     expect(compiled.querySelector('.skip-link')?.getAttribute('href')).toBe('#main-content');
     expect(compiled.querySelector('main')?.id).toBe('main-content');
     expect(compiled.querySelector('app-theme-toggle button')?.getAttribute('aria-label')).toMatch(

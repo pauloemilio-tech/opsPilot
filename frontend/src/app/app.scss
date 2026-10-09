@@ -130,17 +130,28 @@ nav a.active {
 
 @media (max-width: 767px) {
   .app-header {
-    height: 56px;
+    height: auto;
   }
 
   .header-inner {
     width: calc(100% - 32px);
+    min-height: 56px;
+    padding-block: 4px 8px;
     grid-template-columns: 1fr auto;
     gap: 16px;
   }
 
   nav {
-    display: none;
+    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+  }
+
+  nav a {
+    min-width: 0;
+    padding-inline: 10px;
+    flex: 1;
   }
 
   .brand {
