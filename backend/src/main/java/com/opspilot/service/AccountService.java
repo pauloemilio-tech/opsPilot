@@ -1,5 +1,6 @@
 package com.opspilot.service;
 
+import com.opspilot.dto.account.AccountWriteRequest;
 import com.opspilot.exception.AccountNotFoundException;
 import com.opspilot.model.Account;
 import com.opspilot.repository.AccountRepository;
@@ -30,6 +31,34 @@ public class AccountService {
     @Transactional(readOnly = true)
     public List<Account> findAllOrderedByName() {
         return accountRepository.findAllByOrderByNameAsc();
+    }
+
+    @Transactional
+    public Account create(AccountWriteRequest request) {
+        return accountRepository.save(new Account(
+                request.name().trim(),
+                request.industry(),
+                request.region(),
+                request.status(),
+                request.monthlyRevenue(),
+                request.previousMonthRevenue(),
+                request.engagementScore()
+        ));
+    }
+
+    @Transactional
+    public Account update(UUID accountId, AccountWriteRequest request) {
+        Account account = findById(accountId);
+        account.updateOperationalDetails(
+                request.name().trim(),
+                request.industry(),
+                request.region(),
+                request.status(),
+                request.monthlyRevenue(),
+                request.previousMonthRevenue(),
+                request.engagementScore()
+        );
+        return account;
     }
 
     public BigDecimal calculateRevenueChangePercentage(Account account) {

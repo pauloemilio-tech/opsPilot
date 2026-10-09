@@ -8,11 +8,16 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     long countByOrderNumberStartingWith(String prefix);
+
+    boolean existsByOrderNumber(String orderNumber);
+
+    List<Order> findAllByAccount_IdOrderByOrderedAtDescCreatedAtDesc(UUID accountId);
 
     long countByAccount_Id(UUID accountId);
 

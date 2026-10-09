@@ -1,5 +1,6 @@
 package com.opspilot.service;
 
+import com.opspilot.dto.account.AccountWriteRequest;
 import com.opspilot.exception.AccountNotFoundException;
 import com.opspilot.model.Account;
 import com.opspilot.model.enums.AccountStatus;
@@ -57,6 +58,37 @@ class AccountServiceTest {
     }
 
     @Test
+    void shouldCreateAccountFromEditableFields() {
+        AccountRepository repository = org.mockito.Mockito.mock(AccountRepository.class);
+        AccountService service = new AccountService(repository);
+        AccountWriteRequest request = request("New Account", 75);
+        when(repository.save(org.mockito.ArgumentMatchers.any(Account.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account created = service.create(request);
+
+        assertThat(created.getName()).isEqualTo("New Account");
+        assertThat(created.getStatus()).isEqualTo(AccountStatus.ACTIVE);
+        assertThat(created.getEngagementScore()).isEqualTo(75);
+        verify(repository).save(created);
+    }
+
+    @Test
+    void shouldUpdateExistingAccountOperationalFields() {
+        AccountRepository repository = org.mockito.Mockito.mock(AccountRepository.class);
+        AccountService service = new AccountService(repository);
+        UUID accountId = UUID.randomUUID();
+        Account account = account("120.00", "100.00");
+        when(repository.findById(accountId)).thenReturn(Optional.of(account));
+
+        Account updated = service.update(accountId, request("Updated Account", 55));
+
+        assertThat(updated).isSameAs(account);
+        assertThat(updated.getName()).isEqualTo("Updated Account");
+        assertThat(updated.getEngagementScore()).isEqualTo(55);
+    }
+
+    @Test
     void shouldCalculatePositiveRevenueChange() {
         AccountService service = new AccountService(accountRepository);
 
@@ -105,6 +137,13 @@ class AccountServiceTest {
                 new BigDecimal(currentRevenue),
                 new BigDecimal(previousRevenue),
                 80
+        );
+    }
+
+    private AccountWriteRequest request(String name, int engagementScore) {
+        return new AccountWriteRequest(
+                name, "Technology", "LATAM", AccountStatus.ACTIVE,
+                new BigDecimal("5000.00"), new BigDecimal("4500.00"), engagementScore
         );
     }
 }

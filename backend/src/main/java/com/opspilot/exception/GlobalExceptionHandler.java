@@ -44,6 +44,22 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(InvalidOperationalDataException.class)
+    public ResponseEntity<ApiError> handleInvalidOperationalData(
+            InvalidOperationalDataException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ConflictingOrderNumberException.class)
+    public ResponseEntity<ApiError> handleConflictingOrderNumber(
+            ConflictingOrderNumberException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(HttpStatus.CONFLICT, exception.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(AiConfigurationException.class)
     public ResponseEntity<ApiError> handleAiConfiguration(
             AiConfigurationException exception,

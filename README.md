@@ -97,7 +97,15 @@ Resposta esperada:
 ```http
 GET /api/health
 GET /api/accounts
+POST /api/accounts
 GET /api/accounts/{accountId}
+PUT /api/accounts/{accountId}
+POST /api/accounts/{accountId}/orders
+GET /api/accounts/{accountId}/orders
+POST /api/accounts/{accountId}/tickets
+GET /api/accounts/{accountId}/tickets
+POST /api/accounts/{accountId}/interactions
+GET /api/accounts/{accountId}/interactions
 GET /api/accounts/{accountId}/snapshot
 GET /api/accounts/{accountId}/analytics
 GET /api/accounts/priorities

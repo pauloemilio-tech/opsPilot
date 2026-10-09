@@ -22,6 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -108,6 +110,76 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.updatedAt").value("2026-08-31T18:30:00Z"));
 
         verify(accountService).calculateRevenueChangePercentage(account);
+    }
+
+    @Test
+    void shouldCreateAccount() throws Exception {
+        Account account = account(APEX_ID, "Apex Commerce", "E-commerce", "Europe", "42500.00", "40000.00", 82);
+        when(accountService.create(org.mockito.ArgumentMatchers.any())).thenReturn(account);
+        when(accountService.calculateRevenueChangePercentage(account)).thenReturn(new BigDecimal("6.25"));
+
+        mockMvc.perform(post("/api/accounts")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "name": "Apex Commerce",
+                                  "industry": "E-commerce",
+                                  "region": "Europe",
+                                  "status": "ACTIVE",
+                                  "monthlyRevenue": 42500.00,
+                                  "previousMonthRevenue": 40000.00,
+                                  "engagementScore": 82
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(APEX_ID.toString()))
+                .andExpect(jsonPath("$.name").value("Apex Commerce"))
+                .andExpect(jsonPath("$.revenueChangePercentage").value(6.25));
+    }
+
+    @Test
+    void shouldUpdateAccount() throws Exception {
+        Account account = account(APEX_ID, "Updated Apex", "Technology", "LATAM", "50000.00", "42500.00", 88);
+        when(accountService.update(org.mockito.ArgumentMatchers.eq(APEX_ID), org.mockito.ArgumentMatchers.any()))
+                .thenReturn(account);
+        when(accountService.calculateRevenueChangePercentage(account)).thenReturn(new BigDecimal("17.65"));
+
+        mockMvc.perform(put("/api/accounts/{accountId}", APEX_ID)
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "name": "Updated Apex",
+                                  "industry": "Technology",
+                                  "region": "LATAM",
+                                  "status": "ACTIVE",
+                                  "monthlyRevenue": 50000.00,
+                                  "previousMonthRevenue": 42500.00,
+                                  "engagementScore": 88
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Apex"))
+                .andExpect(jsonPath("$.engagementScore").value(88));
+    }
+
+    @Test
+    void shouldRejectInvalidAccountInput() throws Exception {
+        mockMvc.perform(post("/api/accounts")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "name": " ",
+                                  "status": "ACTIVE",
+                                  "monthlyRevenue": -1,
+                                  "previousMonthRevenue": 0,
+                                  "engagementScore": 101
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("name")))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("monthlyRevenue")))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("engagementScore")));
     }
 
     @Test
