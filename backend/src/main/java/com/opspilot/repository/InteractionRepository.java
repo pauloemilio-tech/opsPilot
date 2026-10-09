@@ -3,12 +3,15 @@ package com.opspilot.repository;
 import com.opspilot.model.Interaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface InteractionRepository extends JpaRepository<Interaction, UUID> {
 
     long countByAccount_Id(UUID accountId);
+
+    List<Interaction> findAllByAccount_IdOrderByOccurredAtDescCreatedAtDesc(UUID accountId);
 
     Optional<Interaction> findFirstByAccount_IdOrderByOccurredAtDescCreatedAtDesc(UUID accountId);
 }

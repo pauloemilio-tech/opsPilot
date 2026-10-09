@@ -6,11 +6,14 @@ import com.opspilot.model.enums.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, UUID> {
 
     long countByAccount_Id(UUID accountId);
+
+    List<SupportTicket> findAllByAccount_IdOrderByOpenedAtDescCreatedAtDesc(UUID accountId);
 
     long countByAccount_IdAndStatusIn(UUID accountId, Collection<TicketStatus> statuses);
 

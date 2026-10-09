@@ -96,6 +96,24 @@ public class Account {
         this.engagementScore = engagementScore;
     }
 
+    public void updateOperationalDetails(
+            String name,
+            String industry,
+            String region,
+            AccountStatus status,
+            BigDecimal monthlyRevenue,
+            BigDecimal previousMonthRevenue,
+            Integer engagementScore
+    ) {
+        this.name = name;
+        this.industry = industry;
+        this.region = region;
+        this.status = status;
+        this.monthlyRevenue = monthlyRevenue;
+        this.previousMonthRevenue = previousMonthRevenue;
+        this.engagementScore = engagementScore;
+    }
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
