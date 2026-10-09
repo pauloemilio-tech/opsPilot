@@ -1,6 +1,6 @@
-<a class="back-link" routerLink="/dashboard">
+<a class="back-link" routerLink="/accounts">
   <span aria-hidden="true">&larr;</span>
-  Back to attention queue
+  Back to accounts
 </a>
 
 @if (loading()) {
@@ -51,8 +51,35 @@
     <div class="record-updated">
       <span>Record updated</span>
       <strong>{{ accountData.updatedAt | date: 'medium' }}</strong>
+      <button class="button button-secondary edit-account-button" type="button" (click)="toggleEdit()" [attr.aria-expanded]="editOpen()">
+        {{ editOpen() ? 'Close edit form' : 'Edit account' }}
+      </button>
     </div>
   </header>
+
+  @if (successMessage()) {
+    <p class="feedback-message form-success" role="status">{{ successMessage() }}</p>
+  }
+
+  @if (editOpen()) {
+    <section class="data-entry-panel panel" aria-labelledby="edit-account-title">
+      <h2 id="edit-account-title">Edit operational account fields</h2>
+      <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
+        <div class="data-form-grid account-edit-grid">
+          <div class="form-field field-span-2"><label for="edit-name">Account name</label><input id="edit-name" formControlName="name" /></div>
+          <div class="form-field"><label for="edit-industry">Industry</label><input id="edit-industry" formControlName="industry" /></div>
+          <div class="form-field"><label for="edit-region">Region</label><input id="edit-region" formControlName="region" /></div>
+          <div class="form-field"><label for="edit-status">Status</label><select id="edit-status" formControlName="status">@for (status of accountStatuses; track status) { <option [value]="status">{{ status }}</option> }</select></div>
+          <div class="form-field"><label for="edit-monthly">Monthly revenue</label><input id="edit-monthly" type="number" min="0" step="0.01" formControlName="monthlyRevenue" /></div>
+          <div class="form-field"><label for="edit-previous">Previous month revenue</label><input id="edit-previous" type="number" min="0" step="0.01" formControlName="previousMonthRevenue" /></div>
+          <div class="form-field"><label for="edit-engagement">Engagement score</label><input id="edit-engagement" type="number" min="0" max="100" formControlName="engagementScore" /></div>
+        </div>
+        @if (accountForm.invalid && accountForm.touched) { <p class="form-error">Correct the highlighted account fields before saving.</p> }
+        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+        <div class="entry-actions"><button class="button" type="submit" [disabled]="submitting()">{{ submitting() ? 'Saving…' : 'Save account' }}</button><button class="button button-secondary" type="button" (click)="toggleEdit()">Cancel</button></div>
+      </form>
+    </section>
+  }
 
   @if (analytics(); as analyticsData) {
     <section class="decision-section" aria-labelledby="decision-title">
@@ -252,4 +279,76 @@
       </aside>
     }
   </div>
+
+  <section class="record-data-section" aria-labelledby="record-data-title">
+    <header class="section-intro">
+      <div><p class="section-kicker">Operational input</p><h2 id="record-data-title">Record operational data</h2></div>
+      <p>Add only the signals needed to keep this account's decision state current.</p>
+    </header>
+    <div class="record-actions" aria-label="Operational record types">
+      <button class="button button-secondary" type="button" (click)="openOperationalForm('order')" [attr.aria-expanded]="activeForm() === 'order'">Add order</button>
+      <button class="button button-secondary" type="button" (click)="openOperationalForm('ticket')" [attr.aria-expanded]="activeForm() === 'ticket'">Add support ticket</button>
+      <button class="button button-secondary" type="button" (click)="openOperationalForm('interaction')" [attr.aria-expanded]="activeForm() === 'interaction'">Add interaction</button>
+    </div>
+
+    @if (activeForm() === 'order') {
+      <form class="data-entry-panel panel" [formGroup]="orderForm" (ngSubmit)="createOrder()" aria-labelledby="order-form-title">
+        <h3 id="order-form-title">New order</h3>
+        <div class="data-form-grid">
+          <div class="form-field"><label for="order-number">Order number</label><input id="order-number" formControlName="orderNumber" /></div>
+          <div class="form-field"><label for="order-amount">Amount</label><input id="order-amount" type="number" min="0" step="0.01" formControlName="amount" /></div>
+          <div class="form-field"><label for="order-status">Status</label><select id="order-status" formControlName="status">@for (status of orderStatuses; track status) { <option [value]="status">{{ status }}</option> }</select></div>
+          <div class="form-field"><label for="ordered-at">Ordered at</label><input id="ordered-at" type="datetime-local" formControlName="orderedAt" /></div>
+          <div class="form-field"><label for="expected-at">Expected delivery</label><input id="expected-at" type="datetime-local" formControlName="expectedDeliveryAt" /></div>
+          @if (orderForm.controls.status.value === 'DELIVERED') { <div class="form-field"><label for="delivered-at">Delivered at</label><input id="delivered-at" type="datetime-local" formControlName="deliveredAt" /></div> }
+        </div>
+        @if (orderForm.invalid && orderForm.touched) { <p class="form-error">Order number, amount, status and order time are required.</p> }
+        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+        <div class="entry-actions"><button class="button" type="submit" [disabled]="submitting()">{{ submitting() ? 'Recording…' : 'Record order' }}</button><button class="button button-secondary" type="button" (click)="openOperationalForm('order')">Cancel</button></div>
+      </form>
+    }
+    @if (activeForm() === 'ticket') {
+      <form class="data-entry-panel panel" [formGroup]="ticketForm" (ngSubmit)="createTicket()" aria-labelledby="ticket-form-title">
+        <h3 id="ticket-form-title">New support ticket</h3>
+        <div class="data-form-grid">
+          <div class="form-field field-span-2"><label for="ticket-subject">Subject</label><input id="ticket-subject" formControlName="subject" /></div>
+          <div class="form-field"><label for="ticket-status">Status</label><select id="ticket-status" formControlName="status">@for (status of ticketStatuses; track status) { <option [value]="status">{{ status }}</option> }</select></div>
+          <div class="form-field"><label for="ticket-priority">Priority</label><select id="ticket-priority" formControlName="priority">@for (priority of ticketPriorities; track priority) { <option [value]="priority">{{ priority }}</option> }</select></div>
+          <div class="form-field"><label for="opened-at">Opened at</label><input id="opened-at" type="datetime-local" formControlName="openedAt" /></div>
+          @if (ticketForm.controls.status.value === 'RESOLVED' || ticketForm.controls.status.value === 'CLOSED') { <div class="form-field"><label for="resolved-at">Resolved at</label><input id="resolved-at" type="datetime-local" formControlName="resolvedAt" /></div> }
+        </div>
+        @if (ticketForm.invalid && ticketForm.touched) { <p class="form-error">Subject, status, priority and opened time are required.</p> }
+        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+        <div class="entry-actions"><button class="button" type="submit" [disabled]="submitting()">{{ submitting() ? 'Recording…' : 'Record ticket' }}</button><button class="button button-secondary" type="button" (click)="openOperationalForm('ticket')">Cancel</button></div>
+      </form>
+    }
+    @if (activeForm() === 'interaction') {
+      <form class="data-entry-panel panel" [formGroup]="interactionForm" (ngSubmit)="createInteraction()" aria-labelledby="interaction-form-title">
+        <h3 id="interaction-form-title">New interaction</h3>
+        <div class="data-form-grid">
+          <div class="form-field"><label for="interaction-type">Type</label><select id="interaction-type" formControlName="type">@for (type of interactionTypes; track type) { <option [value]="type">{{ type }}</option> }</select></div>
+          <div class="form-field"><label for="occurred-at">Occurred at</label><input id="occurred-at" type="datetime-local" formControlName="occurredAt" /></div>
+          <div class="form-field field-span-all"><label for="interaction-summary">Summary</label><textarea id="interaction-summary" formControlName="summary"></textarea></div>
+        </div>
+        @if (interactionForm.invalid && interactionForm.touched) { <p class="form-error">Type, summary and occurrence time are required.</p> }
+        @if (formError()) { <p class="form-error" role="alert">{{ formError() }}</p> }
+        <div class="entry-actions"><button class="button" type="submit" [disabled]="submitting()">{{ submitting() ? 'Recording…' : 'Record interaction' }}</button><button class="button button-secondary" type="button" (click)="openOperationalForm('interaction')">Cancel</button></div>
+      </form>
+    }
+  </section>
+
+  <section class="recent-records" aria-labelledby="recent-records-title">
+    <header class="section-intro"><div><p class="section-kicker">Persisted evidence</p><h2 id="recent-records-title">Recent operational records</h2></div></header>
+    <div class="record-columns">
+      <article class="record-list panel"><header><h3>Orders</h3><span>{{ orders().length }}</span></header>
+        @if (orders().length === 0) { <p class="record-empty">No orders recorded.</p> } @else { <ul>@for (order of orders(); track order.id) { <li><strong>{{ order.orderNumber }}</strong><span>{{ order.status }} · {{ order.amount | number: '1.2-2' }}</span><time [attr.datetime]="order.orderedAt">{{ order.orderedAt | date: 'medium' }}</time></li> }</ul> }
+      </article>
+      <article class="record-list panel"><header><h3>Support tickets</h3><span>{{ tickets().length }}</span></header>
+        @if (tickets().length === 0) { <p class="record-empty">No support tickets recorded.</p> } @else { <ul>@for (ticket of tickets(); track ticket.id) { <li><strong>{{ ticket.subject }}</strong><span>{{ ticket.status }} · {{ ticket.priority }}</span><time [attr.datetime]="ticket.openedAt">{{ ticket.openedAt | date: 'medium' }}</time></li> }</ul> }
+      </article>
+      <article class="record-list panel"><header><h3>Interactions</h3><span>{{ interactions().length }}</span></header>
+        @if (interactions().length === 0) { <p class="record-empty">No interactions recorded.</p> } @else { <ul>@for (interaction of interactions(); track interaction.id) { <li><strong>{{ interaction.type }}</strong><span>{{ interaction.summary }}</span><time [attr.datetime]="interaction.occurredAt">{{ interaction.occurredAt | date: 'medium' }}</time></li> }</ul> }
+      </article>
+    </div>
+  </section>
 }

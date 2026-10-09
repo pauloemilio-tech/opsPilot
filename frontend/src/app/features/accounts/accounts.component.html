@@ -1,0 +1,110 @@
+<header class="accounts-header">
+  <div>
+    <p class="page-context">Operational data</p>
+    <h1>Accounts</h1>
+    <p class="page-description">Manage the accounts that supply OpsPilot's decision signals.</p>
+  </div>
+  <button class="button" type="button" (click)="toggleForm()" [attr.aria-expanded]="formOpen()">
+    {{ formOpen() ? 'Close form' : 'Create account' }}
+  </button>
+</header>
+
+@if (formOpen()) {
+  <section class="account-form-panel panel" aria-labelledby="create-account-title">
+    <header>
+      <h2 id="create-account-title">Create account</h2>
+      <p>Enter the operational fields used by account analytics.</p>
+    </header>
+    <form [formGroup]="accountForm" (ngSubmit)="createAccount()">
+      <div class="account-form-grid">
+        <div class="form-field field-wide">
+          <label for="account-name">Account name</label>
+          <input id="account-name" formControlName="name" autocomplete="organization" />
+          @if (accountForm.controls.name.touched && accountForm.controls.name.invalid) {
+            <p class="field-error">Enter an account name of up to 200 characters.</p>
+          }
+        </div>
+        <div class="form-field">
+          <label for="account-industry">Industry</label>
+          <input id="account-industry" formControlName="industry" />
+        </div>
+        <div class="form-field">
+          <label for="account-region">Region</label>
+          <input id="account-region" formControlName="region" />
+        </div>
+        <div class="form-field">
+          <label for="account-status">Status</label>
+          <select id="account-status" formControlName="status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="monthly-revenue">Monthly revenue</label>
+          <input id="monthly-revenue" type="number" min="0" step="0.01" formControlName="monthlyRevenue" />
+        </div>
+        <div class="form-field">
+          <label for="previous-revenue">Previous month revenue</label>
+          <input id="previous-revenue" type="number" min="0" step="0.01" formControlName="previousMonthRevenue" />
+        </div>
+        <div class="form-field">
+          <label for="engagement-score">Engagement score</label>
+          <input id="engagement-score" type="number" min="0" max="100" formControlName="engagementScore" />
+          @if (accountForm.controls.engagementScore.touched && accountForm.controls.engagementScore.invalid) {
+            <p class="field-error">Use a score between 0 and 100.</p>
+          }
+        </div>
+      </div>
+      @if (formError()) {
+        <p class="form-error" role="alert">{{ formError() }}</p>
+      }
+      <div class="form-actions">
+        <button class="button" type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Creating…' : 'Create account' }}
+        </button>
+        <button class="button button-secondary" type="button" (click)="toggleForm()">Cancel</button>
+      </div>
+    </form>
+  </section>
+}
+
+@if (loading()) {
+  <section class="panel accounts-state" aria-live="polite">
+    <h2>Loading accounts</h2>
+    <p>Retrieving operational account records.</p>
+  </section>
+} @else if (errorMessage()) {
+  <section class="panel accounts-state" aria-live="assertive">
+    <h2>Accounts unavailable</h2>
+    <p>{{ errorMessage() }}</p>
+    <button class="button" type="button" (click)="loadAccounts()">Try again</button>
+  </section>
+} @else if (accounts().length === 0) {
+  <section class="panel accounts-state">
+    <h2>No accounts yet</h2>
+    <p>Create the first account to begin recording operational signals and generating priorities.</p>
+    @if (!formOpen()) {
+      <button class="button" type="button" (click)="toggleForm()">Create first account</button>
+    }
+  </section>
+} @else {
+  <section class="accounts-list panel" aria-labelledby="account-list-title">
+    <header><h2 id="account-list-title">Operational accounts</h2><span>{{ accounts().length }} total</span></header>
+    <ul>
+      @for (account of accounts(); track account.id) {
+        <li>
+          <div class="account-list-identity">
+            <a [routerLink]="['/accounts', account.id]">{{ account.name }}</a>
+            <span>{{ account.status }}</span>
+          </div>
+          <dl>
+            <div><dt>Industry</dt><dd>{{ account.industry || 'Not provided' }}</dd></div>
+            <div><dt>Region</dt><dd>{{ account.region || 'Not provided' }}</dd></div>
+          </dl>
+          <a class="open-account" [routerLink]="['/accounts', account.id]">Open account</a>
+        </li>
+      }
+    </ul>
+  </section>
+}

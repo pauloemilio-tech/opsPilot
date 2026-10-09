@@ -17,6 +17,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'accounts',
+    title: 'Accounts | OpsPilot',
+    loadComponent: () =>
+      import('./features/accounts/accounts.component').then(
+        (component) => component.AccountsComponent,
+      ),
+  },
+  {
     path: 'accounts/:accountId',
     title: 'Account | OpsPilot',
     loadComponent: () =>

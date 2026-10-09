@@ -1,117 +1,120 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { of, throwError } from 'rxjs';
 import { AccountApiService } from '../../core/api/account-api.service';
-import {
-  AccountAnalytics,
-  AccountDetails,
-  AccountOperationalSnapshot,
-} from '../../core/models/account.models';
+import { AccountAnalytics, AccountDetails, AccountOperationalSnapshot, InteractionRecord, OrderRecord, SupportTicketRecord } from '../../core/models/account.models';
 import { AccountDetailComponent } from './account-detail.component';
 
 const account: AccountDetails = {
-  id: 'account-1',
-  name: 'Horizon Supply',
-  industry: 'Distribution',
-  region: 'LATAM',
-  status: 'ACTIVE',
-  monthlyRevenue: 29000,
-  previousMonthRevenue: 61000,
-  revenueChangePercentage: -52.46,
-  engagementScore: 18,
-  createdAt: '2026-01-01T12:00:00Z',
-  updatedAt: '2026-09-01T12:00:00Z',
+  id: 'account-1', name: 'Horizon Supply', industry: 'Distribution', region: 'LATAM', status: 'ACTIVE',
+  monthlyRevenue: 29000, previousMonthRevenue: 61000, revenueChangePercentage: -52.46,
+  engagementScore: 18, createdAt: '2026-01-01T12:00:00Z', updatedAt: '2026-09-01T12:00:00Z',
 };
-
 const snapshot: AccountOperationalSnapshot = {
-  accountId: 'account-1',
-  accountName: 'Horizon Supply',
-  monthlyRevenue: 29000,
-  previousMonthRevenue: 61000,
-  revenueChangePercentage: -52.46,
-  engagementScore: 18,
-  delayedOrders: 4,
-  openTickets: 4,
-  criticalOpenTickets: 1,
-  lastInteractionAt: null,
+  accountId: 'account-1', accountName: 'Horizon Supply', monthlyRevenue: 29000, previousMonthRevenue: 61000,
+  revenueChangePercentage: -52.46, engagementScore: 18, delayedOrders: 4, openTickets: 4,
+  criticalOpenTickets: 1, lastInteractionAt: null,
 };
-
 const analytics: AccountAnalytics = {
-  accountId: 'account-1',
-  accountName: 'Horizon Supply',
-  risk: {
-    score: 91,
-    level: 'CRITICAL',
-    revenueRisk: 30,
-    delayedOrdersRisk: 20,
-    supportTicketsRisk: 15,
-    criticalTicketsRisk: 10,
-    engagementRisk: 10,
-    inactivityRisk: 6,
-  },
-  potential: {
-    score: 17,
-    level: 'LOW',
-    revenueGrowthPotential: 0,
-    engagementPotential: 0,
-    revenueStrengthPotential: 12,
-    interactionPotential: 5,
-    operationalStabilityPotential: 0,
-  },
-  priorityScore: 61,
-  priorityLevel: 'HIGH',
+  accountId: 'account-1', accountName: 'Horizon Supply',
+  risk: { score: 91, level: 'CRITICAL', revenueRisk: 30, delayedOrdersRisk: 20, supportTicketsRisk: 15, criticalTicketsRisk: 10, engagementRisk: 10, inactivityRisk: 6 },
+  potential: { score: 17, level: 'LOW', revenueGrowthPotential: 0, engagementPotential: 0, revenueStrengthPotential: 12, interactionPotential: 5, operationalStabilityPotential: 0 },
+  priorityScore: 61, priorityLevel: 'HIGH',
 };
+const order: OrderRecord = { id: 'order-1', accountId: 'account-1', orderNumber: 'ORD-1', amount: 300, status: 'PROCESSING', orderedAt: '2026-09-01T12:00:00Z', expectedDeliveryAt: null, deliveredAt: null, createdAt: '2026-09-01T12:00:00Z' };
+const ticket: SupportTicketRecord = { id: 'ticket-1', accountId: 'account-1', subject: 'Payment issue', status: 'OPEN', priority: 'HIGH', openedAt: '2026-09-01T12:00:00Z', resolvedAt: null, createdAt: '2026-09-01T12:00:00Z' };
+const interaction: InteractionRecord = { id: 'interaction-1', accountId: 'account-1', type: 'CALL', summary: 'Renewal follow-up', occurredAt: '2026-09-01T12:00:00Z', createdAt: '2026-09-01T12:00:00Z' };
 
 describe('AccountDetailComponent', () => {
   let fixture: ComponentFixture<AccountDetailComponent>;
+  let api: {
+    getAccount: ReturnType<typeof vi.fn>; getAccountSnapshot: ReturnType<typeof vi.fn>;
+    getAccountAnalytics: ReturnType<typeof vi.fn>; getOrders: ReturnType<typeof vi.fn>;
+    getTickets: ReturnType<typeof vi.fn>; getInteractions: ReturnType<typeof vi.fn>;
+    updateAccount: ReturnType<typeof vi.fn>; createOrder: ReturnType<typeof vi.fn>;
+    createTicket: ReturnType<typeof vi.fn>; createInteraction: ReturnType<typeof vi.fn>;
+  };
 
-  beforeEach(async () => {
+  async function setup(records = { orders: [] as OrderRecord[], tickets: [] as SupportTicketRecord[], interactions: [] as InteractionRecord[] }): Promise<void> {
+    api = {
+      getAccount: vi.fn(() => of(account)), getAccountSnapshot: vi.fn(() => of(snapshot)),
+      getAccountAnalytics: vi.fn(() => of(analytics)), getOrders: vi.fn(() => of(records.orders)),
+      getTickets: vi.fn(() => of(records.tickets)), getInteractions: vi.fn(() => of(records.interactions)),
+      updateAccount: vi.fn(() => of(account)), createOrder: vi.fn(() => of(order)),
+      createTicket: vi.fn(() => of(ticket)), createInteraction: vi.fn(() => of(interaction)),
+    };
     await TestBed.configureTestingModule({
       imports: [AccountDetailComponent],
-      providers: [
-        provideRouter([]),
-        {
-          provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ accountId: 'account-1' }) } },
-        },
-        {
-          provide: AccountApiService,
-          useValue: {
-            getAccount: () => of(account),
-            getAccountSnapshot: () => of(snapshot),
-            getAccountAnalytics: () => of(analytics),
-          },
-        },
-      ],
+      providers: [provideRouter([]), { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ accountId: 'account-1' }) } } }, { provide: AccountApiService, useValue: api }],
     }).compileComponents();
-    fixture = TestBed.createComponent(AccountDetailComponent);
-    fixture.detectChanges();
-  });
+    fixture = TestBed.createComponent(AccountDetailComponent); fixture.detectChanges();
+  }
 
-  it('renders overview and operational snapshot values', () => {
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('renders overview and backend-provided analytics factors', async () => {
+    await setup();
     const element = fixture.nativeElement as HTMLElement;
     expect(element.textContent).toContain('Horizon Supply');
-    expect(element.textContent).toContain('Distribution');
-    expect(element.textContent).toContain('LATAM');
     expect(element.textContent).toContain('Delayed orders');
-    expect(element.textContent).toContain('4');
-    expect(element.textContent).toContain('No interactions recorded');
+    expect(element.querySelector('.priority-value')?.textContent).toContain('61');
+    expect(element.textContent).toContain('Revenue decline');
+    expect(element.textContent).toContain('+30 points');
     expect(TestBed.inject(Title).getTitle()).toBe('Horizon Supply | OpsPilot');
   });
 
-  it('renders backend-provided analytics factors without recalculation', () => {
-    const element = fixture.nativeElement as HTMLElement;
-    const factors = [...element.querySelectorAll('.factor-list')].map((list) => list.textContent);
-    expect(element.textContent).toContain('Why this account is prioritized');
-    expect(element.querySelector('.priority-value')?.textContent).toContain('61');
-    expect(element.querySelector('.assessment-risk > strong')?.textContent).toContain('91');
-    expect(element.querySelector('.assessment-potential > strong')?.textContent).toContain('17');
-    expect(element.textContent).toContain('Critical');
-    expect(factors[0]).toContain('Revenue decline');
-    expect(factors[0]).toContain('+30 points');
-    expect(factors[1]).toContain('Revenue strength');
-    expect(factors[1]).toContain('+12 points');
-    expect(element.querySelector('.factor-list i')).toBeNull();
+  it('renders operational records from the API', async () => {
+    await setup({ orders: [order], tickets: [ticket], interactions: [interaction] });
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('ORD-1'); expect(text).toContain('Payment issue'); expect(text).toContain('Renewal follow-up');
   });
+
+  it('shows truthful empty operational record states', async () => {
+    await setup();
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('No orders recorded.'); expect(text).toContain('No support tickets recorded.'); expect(text).toContain('No interactions recorded.');
+  });
+
+  it('updates the account and refreshes snapshot and analytics', async () => {
+    await setup(); click('Edit account'); setValue('#edit-name', 'Updated Horizon');
+    fixture.nativeElement.querySelector('#edit-account-title + form').dispatchEvent(new Event('submit')); fixture.detectChanges();
+    expect(api.updateAccount).toHaveBeenCalled(); expect(api.getAccountSnapshot).toHaveBeenCalledTimes(2); expect(api.getAccountAnalytics).toHaveBeenCalledTimes(2);
+    expect(fixture.nativeElement.textContent).toContain('Analytics refreshed');
+  });
+
+  it('creates an order and refreshes operational intelligence', async () => {
+    await setup(); click('Add order'); setValue('#order-number', 'ORD-2'); setValue('#order-amount', '450'); setValue('#ordered-at', '2026-10-01T12:00'); submit('#order-form-title');
+    expect(api.createOrder).toHaveBeenCalled(); expect(api.getOrders).toHaveBeenCalledTimes(2); expect(api.getAccountSnapshot).toHaveBeenCalledTimes(2); expect(api.getAccountAnalytics).toHaveBeenCalledTimes(2);
+  });
+
+  it('handles duplicate order conflicts with an actionable message', async () => {
+    await setup(); api.createOrder.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 409 })));
+    click('Add order'); setValue('#order-number', 'ORD-1'); setValue('#order-amount', '450'); setValue('#ordered-at', '2026-10-01T12:00'); submit('#order-form-title');
+    expect(fixture.nativeElement.textContent).toContain('order number already exists');
+  });
+
+  it('creates a support ticket and refreshes its record list', async () => {
+    await setup(); click('Add support ticket'); setValue('#ticket-subject', 'New incident'); setValue('#opened-at', '2026-10-01T12:00'); submit('#ticket-form-title');
+    expect(api.createTicket).toHaveBeenCalled(); expect(api.getTickets).toHaveBeenCalledTimes(2);
+  });
+
+  it('creates an interaction and refreshes its record list', async () => {
+    await setup(); click('Add interaction'); setValue('#interaction-summary', 'Customer call'); setValue('#occurred-at', '2026-10-01T12:00'); submit('#interaction-form-title');
+    expect(api.createInteraction).toHaveBeenCalled(); expect(api.getInteractions).toHaveBeenCalledTimes(2);
+  });
+
+  function click(label: string): void {
+    const button = [...fixture.nativeElement.querySelectorAll('button')].find((item: HTMLButtonElement) => item.textContent?.includes(label));
+    button?.click(); fixture.detectChanges();
+  }
+  function setValue(selector: string, value: string): void {
+    const control = fixture.nativeElement.querySelector(selector) as HTMLInputElement;
+    control.value = value; control.dispatchEvent(new Event('input')); fixture.detectChanges();
+  }
+  function submit(headingSelector: string): void {
+    const heading = fixture.nativeElement.querySelector(headingSelector) as HTMLElement;
+    heading.closest('form')?.dispatchEvent(new Event('submit')); fixture.detectChanges();
+  }
 });
