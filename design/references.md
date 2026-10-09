@@ -4,7 +4,7 @@
 
 OpsPilot is a B2B operational intelligence workspace for account-management teams. It consolidates account data and presents deterministic Risk, Potential, and Priority analytics so an operator can answer one question quickly: **Which accounts need attention right now?**
 
-The visual direction must support fast comparison, confidence in the ranking, and clear explanations of how scores were produced. It must not imply that future AI analysis, automation, or RAG features are already available.
+The visual direction must support fast comparison, confidence in the ranking, and clear explanations of how scores were produced. The implemented AI Account Analyst must remain visually subordinate to deterministic scores and must not imply that automation or RAG features are available.
 
 Reference notes use three evidence labels:
 
@@ -139,7 +139,7 @@ The approved concept is **black base + graphite layers + signal yellow**. Near-b
 - Equal visual weight for total counts, secondary metrics, and the primary decision.
 - A light theme that looks like a simple inversion of dark mode.
 - Decorative labels, texture, or motion that does not communicate state.
-- Adding visible controls for unimplemented AI, automation, or RAG features.
+- Adding visible controls for unimplemented automation, RAG, or autonomous AI actions.
 
 ## Reference usage rules
 
@@ -149,4 +149,4 @@ The approved concept is **black base + graphite layers + signal yellow**. Near-b
 4. New OpsPilot decisions must be labeled as proposals until approved.
 5. No external screenshot, image, logo, illustration, font file, or other copyrighted asset is added to the repository without explicit approval and licensing review.
 6. The palette, information model, accessibility requirements, and backend-defined ordering take precedence over reference aesthetics.
-7. Future AI and automation capabilities may inform extensibility, but must not appear as active interface features before implementation.
+7. The implemented AI Account Analyst may appear only as an on-demand interpretation layer; future automation capabilities must not appear as active interface features before implementation.
