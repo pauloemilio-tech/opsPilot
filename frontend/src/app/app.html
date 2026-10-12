@@ -1,5 +1,8 @@
 <div class="app-shell">
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  @if (isDemo) {
+    <div class="demo-indicator" role="status">Demo environment — fictional data</div>
+  }
   <header class="app-header">
     <div class="header-inner">
       <a class="brand" routerLink="/">

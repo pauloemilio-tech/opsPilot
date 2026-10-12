@@ -88,6 +88,8 @@ The LLM does not recalculate scores, replace deterministic rules, or execute act
 
 Missing AI configuration does not prevent backend startup. It affects only the analysis endpoint, which returns `503 Service Unavailable`. Provider unavailability also returns `503`, while an invalid provider response returns `502 Bad Gateway`.
 
+The public demo protects that endpoint with persisted per-visitor and global daily quotas plus a cooldown. A quota rejection returns `429 Too Many Requests` with a `Retry-After` header. Visitor identity is stored only as a keyed HMAC hash; raw client IP addresses are never persisted.
+
 ## Architecture
 
 OpsPilot is a modular monolith with a separate single-page frontend:
@@ -197,19 +199,21 @@ npm start
 
 Open `http://localhost:4200`. The Angular development server proxies `/api` requests to `http://localhost:8080` using [`frontend/proxy.conf.json`](frontend/proxy.conf.json).
 
-## Database and development seed
+## Database and fictional seed
 
 The local Compose file runs PostgreSQL 17 on port `5432` with a named volume and a health check. Its credentials are local development defaults and match `application.yml`.
 
 Flyway is the only schema creation mechanism; Hibernate uses `ddl-auto: validate`. The application works with an empty migrated database and does not depend on demonstration data.
 
-The `dev` Spring profile enables an explicitly development-only seed:
+The same idempotent fictional seed is enabled by the `dev` and `demo` Spring profiles:
 
 - all data is fictional;
-- it creates ten varied account scenarios plus related records;
+- it creates eleven varied account scenarios plus related records;
 - it is idempotent by account name and skips scenarios already present;
 - it uses the fixed reference instant `2026-09-01T12:00:00Z` for reproducible dates;
-- it is not loaded under the default profile or any non-`dev` profile.
+- it is not loaded under the default profile.
+
+Use `dev` for local development. Use `demo` only for the public portfolio deployment: it enables the fictional seed and AI quota protection. The matching Angular demo build displays `Demo environment — fictional data`; ordinary production and development builds do not display that indicator.
 
 ## Configuration
 
@@ -236,6 +240,12 @@ The backend reads configuration directly from environment variables. No dotenv l
 | `AI_CONNECT_TIMEOUT` | No | `5s` |
 | `AI_READ_TIMEOUT` | No | `30s` |
 | `AI_MAX_TOKENS` | No | `1200` |
+| `AI_DEMO_RATE_LIMIT_ENABLED` | No | `false` normally; defaults to `true` in the `demo` profile. |
+| `AI_DEMO_MAX_REQUESTS_PER_VISITOR_PER_DAY` | No | `2` |
+| `AI_DEMO_MAX_REQUESTS_PER_DAY` | No | `10` |
+| `AI_DEMO_COOLDOWN_SECONDS` | No | `60` |
+| `AI_DEMO_TRUST_FORWARDED_HEADERS` | No | `false` normally; defaults to `true` in the `demo` profile. |
+| `AI_DEMO_VISITOR_HASH_SECRET` | In `demo`, or whenever quota protection is enabled | Secret used to HMAC visitor IPs before persistence; no demo default. |
 
 Placeholder-only PowerShell example:
 
@@ -254,6 +264,23 @@ export AI_MODEL="<claude-model-id>"
 ```
 
 Use environment-specific secret management outside local development. Do not commit credentials.
+
+## Public demo deployment
+
+Run the backend with the `demo` Spring profile and build the frontend with the `demo` Angular configuration:
+
+```bash
+export SPRING_PROFILES_ACTIVE=demo
+export AI_DEMO_VISITOR_HASH_SECRET="<a-long-random-secret>"
+./mvnw spring-boot:run
+
+cd ../frontend
+npm run build -- --configuration demo
+```
+
+The deployment assumes a same-origin reverse proxy: serve the Angular files and forward `/api` to the Spring backend. TLS should terminate at that proxy, and the backend should not be directly reachable from the public internet. The demo profile trusts `X-Forwarded-For`/`X-Real-IP` by default for per-visitor quotas, so the proxy must replace—not append untrusted client-supplied forwarding headers. Set `AI_DEMO_TRUST_FORWARDED_HEADERS=false` when that trust boundary is not guaranteed.
+
+Keep `AI_API_KEY`, `AI_DEMO_VISITOR_HASH_SECRET`, database credentials, and all other secrets in the backend runtime only. Angular environment files contain only the non-sensitive demo display flag; no provider key or secret belongs in a frontend build.
 
 ## API overview
 
@@ -317,6 +344,7 @@ The fuller visual rationale is documented in [`design/design.md`](design/design.
 - Account and operational lists are not paginated.
 - AI analysis is synchronous and depends on an external provider.
 - AI analysis history is not persisted.
+- The public demo is intentionally rate-limited and is not a substitute for authentication or authorization.
 - There are no external CRM integrations, alerts, RAG, workflow automation, or action execution.
 - There is no production observability stack or deployment infrastructure in this repository.
 - No production deployment URL is currently documented.

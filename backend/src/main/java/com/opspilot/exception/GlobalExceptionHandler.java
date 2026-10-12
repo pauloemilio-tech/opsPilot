@@ -3,6 +3,7 @@ package com.opspilot.exception;
 import com.opspilot.ai.exception.AiConfigurationException;
 import com.opspilot.ai.exception.AiProviderResponseException;
 import com.opspilot.ai.exception.AiProviderUnavailableException;
+import com.opspilot.ai.exception.AiRateLimitExceededException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.stream.Collectors;
 
@@ -84,7 +86,31 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_GATEWAY, exception.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(AiRateLimitExceededException.class)
+    public ResponseEntity<ApiError> handleAiRateLimitExceeded(
+            AiRateLimitExceededException exception,
+            HttpServletRequest request
+    ) {
+        Duration retryAfter = exception.getRetryAfter();
+        String message = exception.getMessage();
+        return buildResponse(
+                HttpStatus.TOO_MANY_REQUESTS,
+                message,
+                request.getRequestURI(),
+                retryAfter != null && !retryAfter.isZero() && !retryAfter.isNegative() ? retryAfter : null
+        );
+    }
+
     private ResponseEntity<ApiError> buildResponse(HttpStatus status, String message, String path) {
+        return buildResponse(status, message, path, null);
+    }
+
+    private ResponseEntity<ApiError> buildResponse(
+            HttpStatus status,
+            String message,
+            String path,
+            Duration retryAfter
+    ) {
         ApiError body = new ApiError(
                 Instant.now(),
                 status.value(),
@@ -93,6 +119,8 @@ public class GlobalExceptionHandler {
                 path
         );
 
-        return ResponseEntity.status(status).body(body);
+        return ResponseEntity.status(status)
+                .header("Retry-After", retryAfter == null ? null : String.valueOf(Math.max(1, (int) Math.ceil(retryAfter.toSeconds()))))
+                .body(body);
     }
 }

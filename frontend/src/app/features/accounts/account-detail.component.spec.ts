@@ -150,6 +150,7 @@ describe('AccountDetailComponent', () => {
   });
 
   it.each([
+    [429, 'The demo AI analysis limit has been reached. Try again later.'],
     [503, 'AI analysis is currently unavailable.'],
     [502, 'OpsPilot could not produce a valid analysis. Try again.'],
     [0, 'Unable to generate the analysis right now.'],

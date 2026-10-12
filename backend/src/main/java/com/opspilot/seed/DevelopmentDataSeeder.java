@@ -29,7 +29,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Profile("dev")
+@Profile({"dev", "demo"})
 @RequiredArgsConstructor
 public class DevelopmentDataSeeder implements ApplicationRunner {
 
@@ -46,7 +46,7 @@ public class DevelopmentDataSeeder implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         SeedTotals totals = seedAccounts();
         log.info(
-                "Development seed finished: {} accounts, {} orders, {} support tickets and {} interactions created",
+                "Fictional seed finished: {} accounts, {} orders, {} support tickets and {} interactions created",
                 totals.accounts(), totals.orders(), totals.tickets(), totals.interactions()
         );
     }

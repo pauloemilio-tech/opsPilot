@@ -1,6 +1,7 @@
 package com.opspilot.ai;
 
 import com.opspilot.ai.dto.AccountAiAnalysis;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class AccountAiAnalysisController {
     private final AiAnalysisService aiAnalysisService;
 
     @PostMapping("/{accountId}/ai-analysis")
-    public AccountAiAnalysis analyze(@PathVariable UUID accountId) {
-        return aiAnalysisService.analyze(accountId);
+    public AccountAiAnalysis analyze(@PathVariable UUID accountId, HttpServletRequest request) {
+        return aiAnalysisService.analyze(accountId, request);
     }
 }

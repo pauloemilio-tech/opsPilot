@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/theme/theme.service';
+import { APP_ENVIRONMENT } from './core/config/app-environment';
 import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.component';
 
 @Component({
@@ -12,4 +13,5 @@ import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.compone
 })
 export class App {
   protected readonly themeService = inject(ThemeService);
+  protected readonly isDemo = inject(APP_ENVIRONMENT).demo;
 }
