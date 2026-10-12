@@ -5,18 +5,24 @@ import com.opspilot.ai.dto.RecommendedAction;
 import com.opspilot.ai.exception.AiConfigurationException;
 import com.opspilot.ai.exception.AiProviderResponseException;
 import com.opspilot.ai.exception.AiProviderUnavailableException;
+import com.opspilot.ai.exception.AiRateLimitExceededException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.time.Duration;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AccountAiAnalysisController.class)
@@ -32,7 +38,7 @@ class AccountAiAnalysisControllerTest {
 
     @Test
     void shouldReturnStructuredAnalysisWithoutReplacementScores() throws Exception {
-        when(aiAnalysisService.analyze(ACCOUNT_ID)).thenReturn(new AccountAiAnalysis(
+        when(aiAnalysisService.analyze(eq(ACCOUNT_ID), any(HttpServletRequest.class))).thenReturn(new AccountAiAnalysis(
                 "The account has elevated support pressure.",
                 List.of("Critical support tickets remain open."),
                 List.of(new RecommendedAction(
@@ -56,7 +62,8 @@ class AccountAiAnalysisControllerTest {
 
     @Test
     void shouldReturnServiceUnavailableWhenAiIsNotConfigured() throws Exception {
-        when(aiAnalysisService.analyze(ACCOUNT_ID)).thenThrow(new AiConfigurationException());
+        when(aiAnalysisService.analyze(eq(ACCOUNT_ID), any(HttpServletRequest.class)))
+                .thenThrow(new AiConfigurationException());
 
         mockMvc.perform(post("/api/accounts/{accountId}/ai-analysis", ACCOUNT_ID))
                 .andExpect(status().isServiceUnavailable())
@@ -66,7 +73,8 @@ class AccountAiAnalysisControllerTest {
 
     @Test
     void shouldReturnBadGatewayForInvalidProviderResponse() throws Exception {
-        when(aiAnalysisService.analyze(ACCOUNT_ID)).thenThrow(new AiProviderResponseException());
+        when(aiAnalysisService.analyze(eq(ACCOUNT_ID), any(HttpServletRequest.class)))
+                .thenThrow(new AiProviderResponseException());
 
         mockMvc.perform(post("/api/accounts/{accountId}/ai-analysis", ACCOUNT_ID))
                 .andExpect(status().isBadGateway())
@@ -75,10 +83,25 @@ class AccountAiAnalysisControllerTest {
 
     @Test
     void shouldReturnServiceUnavailableWhenProviderCannotBeReached() throws Exception {
-        when(aiAnalysisService.analyze(ACCOUNT_ID)).thenThrow(new AiProviderUnavailableException());
+        when(aiAnalysisService.analyze(eq(ACCOUNT_ID), any(HttpServletRequest.class)))
+                .thenThrow(new AiProviderUnavailableException());
 
         mockMvc.perform(post("/api/accounts/{accountId}/ai-analysis", ACCOUNT_ID))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.message").value("AI Account Analyst is temporarily unavailable"));
+    }
+
+    @Test
+    void shouldReturnTooManyRequestsWhenDemoQuotaIsExceeded() throws Exception {
+        when(aiAnalysisService.analyze(eq(ACCOUNT_ID), any(HttpServletRequest.class)))
+                .thenThrow(new AiRateLimitExceededException(
+                        "AI analysis demo limit reached. Try again later.",
+                        Duration.ofSeconds(60)
+                ));
+
+        mockMvc.perform(post("/api/accounts/{accountId}/ai-analysis", ACCOUNT_ID))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string("Retry-After", "60"))
+                .andExpect(jsonPath("$.message").value("AI analysis demo limit reached. Try again later."));
     }
 }

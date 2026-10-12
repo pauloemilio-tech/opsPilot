@@ -1,0 +1,6 @@
+opspilot:
+  ai:
+    demo-rate-limit:
+      enabled: ${AI_DEMO_RATE_LIMIT_ENABLED:true}
+      trust-forwarded-headers: ${AI_DEMO_TRUST_FORWARDED_HEADERS:true}
+      visitor-hash-secret: ${AI_DEMO_VISITOR_HASH_SECRET}

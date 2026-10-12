@@ -252,6 +252,7 @@ export class AccountDetailComponent {
     return error.status === 0 ? 'Unable to reach OpsPilot. Check your connection.' : fallback;
   }
   private aiErrorMessage(error: HttpErrorResponse): string {
+    if (error.status === 429) return 'The demo AI analysis limit has been reached. Try again later.';
     if (error.status === 503) return 'AI analysis is currently unavailable.';
     if (error.status === 502) return 'OpsPilot could not produce a valid analysis. Try again.';
     return 'Unable to generate the analysis right now.';

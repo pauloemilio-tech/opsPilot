@@ -3,6 +3,8 @@ package com.opspilot.ai;
 import com.opspilot.ai.dto.AccountAiAnalysis;
 import com.opspilot.ai.dto.RecommendedAction;
 import com.opspilot.ai.model.AccountAnalysisContext;
+import com.opspilot.ai.quota.AiDemoQuotaService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,6 +27,12 @@ class AiAnalysisServiceTest {
     private LlmClient llmClient;
 
     @Mock
+    private AiDemoQuotaService aiDemoQuotaService;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
     private AccountAnalysisContext context;
 
     @Test
@@ -41,9 +49,10 @@ class AiAnalysisServiceTest {
         when(contextBuilder.build(accountId)).thenReturn(context);
         when(llmClient.analyze(context)).thenReturn(analysis);
 
-        AccountAiAnalysis result = new AiAnalysisService(contextBuilder, llmClient).analyze(accountId);
+        AccountAiAnalysis result = new AiAnalysisService(contextBuilder, llmClient, aiDemoQuotaService).analyze(accountId, request);
 
         assertThat(result).isSameAs(analysis);
+        verify(aiDemoQuotaService).reserveRequest(request);
         verify(contextBuilder).build(accountId);
         verify(llmClient).analyze(context);
     }

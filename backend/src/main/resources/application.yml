@@ -32,3 +32,10 @@ opspilot:
     connect-timeout: ${AI_CONNECT_TIMEOUT:5s}
     read-timeout: ${AI_READ_TIMEOUT:30s}
     max-tokens: ${AI_MAX_TOKENS:1200}
+    demo-rate-limit:
+      enabled: ${AI_DEMO_RATE_LIMIT_ENABLED:false}
+      max-requests-per-visitor-per-day: ${AI_DEMO_MAX_REQUESTS_PER_VISITOR_PER_DAY:2}
+      max-requests-per-day: ${AI_DEMO_MAX_REQUESTS_PER_DAY:10}
+      cooldown-seconds: ${AI_DEMO_COOLDOWN_SECONDS:60}
+      trust-forwarded-headers: ${AI_DEMO_TRUST_FORWARDED_HEADERS:false}
+      visitor-hash-secret: ${AI_DEMO_VISITOR_HASH_SECRET:change-me-in-production}
