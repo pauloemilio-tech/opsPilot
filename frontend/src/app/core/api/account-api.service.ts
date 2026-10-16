@@ -16,11 +16,12 @@ import {
   SupportTicketCreateRequest,
   SupportTicketRecord,
 } from '../models/account.models';
+import { APP_ENVIRONMENT } from '../config/app-environment';
 
 @Injectable({ providedIn: 'root' })
 export class AccountApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/accounts';
+  private readonly baseUrl = `${inject(APP_ENVIRONMENT).apiBaseUrl}/api/accounts`;
 
   getAccounts(): Observable<AccountSummary[]> {
     return this.http.get<AccountSummary[]>(this.baseUrl);
