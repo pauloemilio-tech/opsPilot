@@ -1,0 +1,9 @@
+# Copy this file to terraform.tfvars (which is ignored) and replace every value,
+# or set the equivalent TF_VAR_* environment variables instead.
+compartment_ocid = "ocid1.compartment.oc1..replace_me"
+admin_cidr       = "203.0.113.10/32"
+ssh_public_key   = "ssh-ed25519 REPLACE_WITH_YOUR_PUBLIC_KEY"
+
+# Optional overrides:
+# region              = "sa-saopaulo-1"
+# availability_domain = "Vasp:SA-SAOPAULO-1-AD-1"
