@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment';
 
 export interface AppEnvironment {
   demo: boolean;
+  apiBaseUrl: string;
 }
 
 export const APP_ENVIRONMENT = new InjectionToken<AppEnvironment>('APP_ENVIRONMENT', {

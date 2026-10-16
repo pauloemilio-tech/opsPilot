@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { APP_ENVIRONMENT } from '../config/app-environment';
 import { AccountApiService } from './account-api.service';
 
 describe('AccountApiService', () => {
@@ -70,5 +71,28 @@ describe('AccountApiService', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toBeNull();
     request.flush({ summary: 'Current context', keyConcerns: [], recommendedActions: [] });
+  });
+
+  it('uses the configured backend origin', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        AccountApiService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: APP_ENVIRONMENT,
+          useValue: { demo: true, apiBaseUrl: 'https://backend.example.test' },
+        },
+      ],
+    });
+    service = TestBed.inject(AccountApiService);
+    http = TestBed.inject(HttpTestingController);
+
+    service.getAccounts().subscribe();
+
+    const request = http.expectOne('https://backend.example.test/api/accounts');
+    expect(request.request.method).toBe('GET');
+    request.flush([]);
   });
 });

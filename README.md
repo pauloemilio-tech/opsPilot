@@ -223,12 +223,15 @@ The backend reads configuration directly from environment variables. No dotenv l
 
 | Variable | Required | Default |
 | --- | --- | --- |
+| `DB_URL` | No | Composed from `DB_HOST`, `DB_PORT`, and `DB_NAME`; set to the complete hosted PostgreSQL JDBC URL in production. |
 | `DB_HOST` | No | `localhost` |
 | `DB_PORT` | No | `5432` |
 | `DB_NAME` | No | `opspilot` |
 | `DB_USER` | No | `opspilot` |
 | `DB_PASSWORD` | No | `opspilot` (local development only) |
-| `SERVER_PORT` | No | `8080` |
+| `SERVER_PORT` | No | `PORT`, then `8080` |
+| `PORT` | No | `8080`; used when `SERVER_PORT` is absent for platform-assigned ports. |
+| `CORS_ALLOWED_ORIGINS` | No | `http://localhost:4200`; comma-separated explicit frontend origins. |
 
 ### AI Account Analyst
 
@@ -272,15 +275,25 @@ Run the backend with the `demo` Spring profile and build the frontend with the `
 ```bash
 export SPRING_PROFILES_ACTIVE=demo
 export AI_DEMO_VISITOR_HASH_SECRET="<a-long-random-secret>"
+export DB_URL="jdbc:postgresql://<aiven-host>:<port>/<database>?sslmode=require"
+export DB_USER="<aiven-user>"
+export DB_PASSWORD="<aiven-password>"
+export CORS_ALLOWED_ORIGINS="https://<cloudflare-pages-project>.pages.dev"
 ./mvnw spring-boot:run
 
 cd ../frontend
 npm run build -- --configuration demo
 ```
 
-The deployment assumes a same-origin reverse proxy: serve the Angular files and forward `/api` to the Spring backend. TLS should terminate at that proxy, and the backend should not be directly reachable from the public internet. The demo profile trusts `X-Forwarded-For`/`X-Real-IP` by default for per-visitor quotas, so the proxy must replace—not append untrusted client-supplied forwarding headers. Set `AI_DEMO_TRUST_FORWARDED_HEADERS=false` when that trust boundary is not guaranteed.
+Before deploying to Cloudflare Pages, replace the explicit non-resolving URL in
+`environment.demo.ts` with the real Render service URL. Set
+`CORS_ALLOWED_ORIGINS` on Render to the exact Cloudflare Pages origin (without a
+wildcard). The demo profile trusts `X-Forwarded-For`/`X-Real-IP` by default for
+per-visitor quotas, so Render must replace—not append untrusted client-supplied
+forwarding headers. Set `AI_DEMO_TRUST_FORWARDED_HEADERS=false` when that trust
+boundary is not guaranteed.
 
-Keep `AI_API_KEY`, `AI_DEMO_VISITOR_HASH_SECRET`, database credentials, and all other secrets in the backend runtime only. Angular environment files contain only the non-sensitive demo display flag; no provider key or secret belongs in a frontend build.
+Keep `AI_API_KEY`, `AI_DEMO_VISITOR_HASH_SECRET`, database credentials, and all other secrets in the backend runtime only. Angular environment files contain only non-sensitive build configuration; no provider key or secret belongs in a frontend build.
 
 ## API overview
 
