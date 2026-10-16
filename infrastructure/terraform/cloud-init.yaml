@@ -1,0 +1,12 @@
+#cloud-config
+package_update: true
+packages:
+  - openjdk-17-jre-headless
+  - postgresql
+  - nginx
+  - git
+
+runcmd:
+  - [systemctl, enable, --now, postgresql]
+  - [systemctl, enable, --now, nginx]
+  - [install, -d, -o, ubuntu, -g, ubuntu, -m, "0755", /opt/opspilot]
