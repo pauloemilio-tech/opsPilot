@@ -285,8 +285,8 @@ cd ../frontend
 npm run build -- --configuration demo
 ```
 
-Before deploying to Cloudflare Pages, replace the explicit non-resolving URL in
-`environment.demo.ts` with the real Render service URL. Set
+The demo frontend in `environment.demo.ts` uses
+`https://opspilot-g29t.onrender.com` as its Render API base URL. Set
 `CORS_ALLOWED_ORIGINS` on Render to the exact Cloudflare Pages origin (without a
 wildcard). The demo profile trusts `X-Forwarded-For`/`X-Real-IP` by default for
 per-visitor quotas, so Render must replace—not append untrusted client-supplied
