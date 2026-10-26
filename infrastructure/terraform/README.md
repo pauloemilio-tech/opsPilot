@@ -2,7 +2,7 @@
 
 This directory provisions the minimum infrastructure for the public OpsPilot
 demo in Oracle Cloud Infrastructure: one VCN, one public subnet, an Internet
-Gateway and route, an NSG, and one ARM compute instance.
+Gateway and route, an NSG, and one AMD/x86_64 compute instance.
 
 Terraform does not deploy the application or create paid supporting services.
 Never run `terraform apply` until the plan has been reviewed and OCI capacity
@@ -60,20 +60,48 @@ MVP and can be narrowed later if fixed destinations are available.
 
 ## Compute and image selection
 
-The instance uses `VM.Standard.A1.Flex` with 1 OCPU and 6 GB of memory. The OCI
-image data source filters by shape, Canonical Ubuntu 24.04, and creation time,
+The instance uses the fixed `VM.Standard.E2.1.Micro` shape with 1 GB of memory
+(an AMD/x86_64 platform). The shape's CPU and memory are fixed, so Terraform
+does not set a `shape_config` block. The OCI image data source filters by shape,
+Canonical Ubuntu 24.04, and creation time,
 then selects the newest compatible image. This avoids committing a dated image
-OCID and ensures the selected image supports the A1 ARM/aarch64 shape.
+OCID and ensures the selected image supports `VM.Standard.E2.1.Micro` and its
+x86_64 architecture.
 
 The boot volume uses the image/default size; no extra or enlarged block volume
-is requested. A1 capacity and Always Free eligibility are tenancy- and
-region-dependent, and capacity in an availability domain is not guaranteed.
+is requested. `VM.Standard.E2.1.Micro` capacity and Always Free eligibility are
+tenancy- and region-dependent, capacity in an availability domain is not
+guaranteed, and the Always Free allowance permits only a limited number of
+eligible micro instances across the tenancy. Confirm both remaining tenancy
+allowance and the plan's cost estimate before applying.
 
 ## Bootstrap boundary
 
 Cloud-init refreshes package metadata, installs Java 17, PostgreSQL, Nginx, and
 Git, enables PostgreSQL and Nginx, and creates `/opt/opspilot` owned by the
-standard `ubuntu` user.
+standard `ubuntu` user. It also creates and enables a 1 GB `/swapfile` and adds
+it to `/etc/fstab`. Swap is a safety margin for transient pressure, not a
+substitute for bounding the application heap.
+
+PostgreSQL is configured for a low-traffic demo with 30 maximum connections,
+128 MB shared buffers, a 384 MB effective cache estimate, 32 MB maintenance
+work memory, 4 MB per-operation work memory, and 4 MB WAL buffers. PostgreSQL
+continues to use its package defaults for network binding; port 5432 is not
+opened by the NSG.
+
+With only 1 GB of physical RAM shared by the OS, PostgreSQL, Nginx, and Java,
+deploy a built Spring Boot JAR directly under `/opt/opspilot` and run it with
+systemd rather than keeping Docker running. A recommended starting limit is:
+
+```text
+JAVA_TOOL_OPTIONS=-Xms128m -Xmx384m
+```
+
+Keep application secrets in a root-readable systemd environment file or an
+external secret store, not in Terraform variables, cloud-init, the unit file,
+or the repository. Monitor memory and swap use after deployment; the micro
+shape is intended for a low-traffic demo and has little headroom for builds or
+traffic spikes.
 
 It intentionally does not clone the repository, deploy a JAR, add application
 or Anthropic credentials, configure TLS certificates, or install production

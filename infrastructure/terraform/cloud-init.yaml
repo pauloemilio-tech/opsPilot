@@ -6,7 +6,53 @@ packages:
   - nginx
   - git
 
+bootcmd:
+  # Enable swap before package installation to give bootstrap more headroom.
+  - |
+    if [ ! -f /swapfile ]; then
+      fallocate -l 1G /swapfile
+      chmod 0600 /swapfile
+      mkswap /swapfile
+    fi
+    if ! grep -q '^/swapfile[[:space:]]' /etc/fstab; then
+      printf '%s\n' '/swapfile none swap sw 0 0' >> /etc/fstab
+    fi
+    if ! swapon --show=NAME --noheadings | grep -qx '/swapfile'; then
+      swapon /swapfile
+    fi
+
+write_files:
+  - path: /usr/local/sbin/configure-opspilot-postgresql
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      set -eu
+
+      # Ubuntu packages create the cluster during installation. Put the demo's
+      # overrides in its conf.d directory without assuming a PostgreSQL version.
+      pg_config_file="$(find /etc/postgresql -type f -name postgresql.conf | head -n 1)"
+      if [ -z "$pg_config_file" ]; then
+        echo 'PostgreSQL configuration was not found' >&2
+        exit 1
+      fi
+      pg_conf_dir="$(dirname "$pg_config_file")/conf.d"
+      install -d -o postgres -g postgres -m 0755 "$pg_conf_dir"
+      cat > "$pg_conf_dir/99-opspilot-low-memory.conf" <<'EOF'
+      # Conservative defaults for the low-traffic OpsPilot demo on 1 GB RAM.
+      max_connections = 30
+      shared_buffers = 128MB
+      effective_cache_size = 384MB
+      maintenance_work_mem = 32MB
+      work_mem = 4MB
+      wal_buffers = 4MB
+      EOF
+      chown postgres:postgres "$pg_conf_dir/99-opspilot-low-memory.conf"
+      chmod 0644 "$pg_conf_dir/99-opspilot-low-memory.conf"
+
 runcmd:
+  - [/usr/local/sbin/configure-opspilot-postgresql]
   - [systemctl, enable, --now, postgresql]
+  - [systemctl, restart, postgresql]
   - [systemctl, enable, --now, nginx]
   - [install, -d, -o, ubuntu, -g, ubuntu, -m, "0755", /opt/opspilot]
