@@ -13,7 +13,8 @@ resource "oci_core_instance" "opspilot_demo" {
   }
 
   source_details {
-    source_type = "image"
+    source_type             = "image"
+    boot_volume_size_in_gbs = 50
     # Pin the image for reproducible deployments and to avoid regressions in newer image builds.
     source_id = "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaabnvkv25i7oj725yhi6e4ae5fod7ekzffeng3bwp2x37eanuauxrq"
   }

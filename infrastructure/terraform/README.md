@@ -68,12 +68,13 @@ image `Canonical-Ubuntu-24.04-2026.08.25-0` with OCID
 Pinning the image instead of automatically selecting the newest build keeps
 deployments reproducible and avoids regressions in newer image builds.
 
-The boot volume uses the image/default size; no extra or enlarged block volume
-is requested. `VM.Standard.E2.1.Micro` capacity and Always Free eligibility are
-tenancy- and region-dependent, capacity in an availability domain is not
-guaranteed, and the Always Free allowance permits only a limited number of
-eligible micro instances across the tenancy. Confirm both remaining tenancy
-allowance and the plan's cost estimate before applying.
+The boot volume is explicitly set to 50 GB, the minimum supported size required
+when updating this instance to the pinned image. `VM.Standard.E2.1.Micro`
+capacity and Always Free eligibility are tenancy- and region-dependent,
+capacity in an availability domain is not guaranteed, and the Always Free
+allowance permits only a limited number of eligible micro instances across the
+tenancy. Confirm both remaining tenancy allowance and the plan's cost estimate
+before applying.
 
 ## Bootstrap boundary
 
