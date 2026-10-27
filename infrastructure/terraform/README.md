@@ -62,11 +62,11 @@ MVP and can be narrowed later if fixed destinations are available.
 
 The instance uses the fixed `VM.Standard.E2.1.Micro` shape with 1 GB of memory
 (an AMD/x86_64 platform). The shape's CPU and memory are fixed, so Terraform
-does not set a `shape_config` block. The OCI image data source filters by shape,
-Canonical Ubuntu 24.04, and creation time,
-then selects the newest compatible image. This avoids committing a dated image
-OCID and ensures the selected image supports `VM.Standard.E2.1.Micro` and its
-x86_64 architecture.
+does not set a `shape_config` block. The instance is pinned to the Ubuntu 24.04
+image `Canonical-Ubuntu-24.04-2026.08.25-0` with OCID
+`ocid1.image.oc1.sa-saopaulo-1.aaaaaaaabnvkv25i7oj725yhi6e4ae5fod7ekzffeng3bwp2x37eanuauxrq`.
+Pinning the image instead of automatically selecting the newest build keeps
+deployments reproducible and avoids regressions in newer image builds.
 
 The boot volume uses the image/default size; no extra or enlarged block volume
 is requested. `VM.Standard.E2.1.Micro` capacity and Always Free eligibility are
